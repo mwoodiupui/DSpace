@@ -183,6 +183,8 @@ public class DSpaceCocoonServletFilter implements Filter
                     + File.separator + "config" + File.separator + "xmlui.xconf";
 
             XMLUIConfiguration.loadConfig(webappConfigPath,installedConfigPath);
+
+            LOG.info("XMLUI initialized");
         }
     	catch (RuntimeException e)
         {
