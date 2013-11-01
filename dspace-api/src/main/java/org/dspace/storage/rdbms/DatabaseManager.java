@@ -1509,13 +1509,13 @@ public class DatabaseManager
             String product = cnx.getMetaData().getDatabaseProductName();
             cnx.abort(null);
             String dbmsVendor;
-            if (product.contains("PostgreSQL")) // FIXME sure?
+            if (product.contains("PostgreSQL"))
             {
                 isOracle = false;
                 isPostgres = true;
                 dbmsVendor = "PostgreSQL";
             }
-            else if (product.contains("Oracle")) // FIXME sure?
+            else if (product.contains("Oracle"))
             {
                 isOracle = true;
                 isPostgres = false;
