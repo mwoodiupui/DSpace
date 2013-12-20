@@ -283,10 +283,6 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>commons-httpclient</groupId>
@@ -337,28 +333,8 @@
             <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-        </dependency>
-        <dependency>
-           <groupId>org.apache.pdfbox</groupId>
-           <artifactId>fontbox</artifactId>
-        </dependency>
-        <dependency>
-           <groupId>org.apache.pdfbox</groupId>
-           <artifactId>jempbox</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcmail-jdk15</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -373,8 +349,9 @@
             <artifactId>poi-ooxml</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.java.dev.rome</groupId>
+            <groupId>rome</groupId>
             <artifactId>rome</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>rome</groupId>
@@ -387,10 +364,6 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.activation</groupId>
@@ -449,6 +422,11 @@
             <version>4.2.1</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
             <version>${solr.version}</version>
@@ -501,22 +479,33 @@
             <artifactId>gson</artifactId>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
 		
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-		
-		<dependency>
-	    	<groupId>backport-util-concurrent</groupId>
-	    	<artifactId>backport-util-concurrent</artifactId>
-	    	<version>3.1</version>
-		</dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+        </dependency>
+
     </dependencies>
 
 </project>

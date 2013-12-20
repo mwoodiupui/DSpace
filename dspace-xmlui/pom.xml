@@ -107,6 +107,37 @@
             <groupId>jdom</groupId>
             <artifactId>jdom</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>avalon-framework</groupId>
+            <artifactId>avalon-framework-api</artifactId>
+            <version>4.3</version> <!-- XXX 4.3.1 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>geronimo-spec</groupId>
+                    <artifactId>geronimo-spec-javamail</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>avalon-framework</groupId>
+            <artifactId>avalon-framework-impl</artifactId>
+            <version>4.3</version> <!-- XXX 4.3.1 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-configuration-api</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.cocoon</groupId>
             <artifactId>cocoon-core</artifactId>
@@ -116,18 +147,59 @@
                     <groupId>net.sf.ehcache</groupId>
                     <artifactId>ehcache</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cocoon</groupId>
-            <artifactId>cocoon-template-impl</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cocoon</groupId>
             <artifactId>cocoon-flowscript-impl</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-pipeline-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-pipeline-components</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-pipeline-impl</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.excalibur.components</groupId>
+            <artifactId>excalibur-pool-api</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.excalibur.components</groupId>
+            <artifactId>excalibur-sourceresolve</artifactId>
+            <version>2.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.excalibur.components</groupId>
+            <artifactId>excalibur-store</artifactId>
+            <version>2.2.1</version>
         </dependency>
 
         <dependency>
@@ -139,6 +211,7 @@
             <groupId>org.apache.cocoon</groupId>
             <artifactId>cocoon-servlet-service-components</artifactId>
             <version>1.0.0</version>
+            <!-- This dependency is transitive.  Here only for following exclusion. -->
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.cocoon</groupId>
@@ -154,55 +227,48 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-jxpath</groupId>
-            <artifactId>commons-jxpath</artifactId>
-            <version>1.3</version>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-sitemap-api</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
-            <groupId>org.swordapp</groupId>
-            <artifactId>sword-common</artifactId>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-sitemap-impl</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Explicitly Specify Latest Version of Spring -->
         <dependency>
-            <artifactId>spring-core</artifactId>
+            <groupId>org.apache.cocoon</groupId>
+            <artifactId>cocoon-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Spring -->
+        <dependency>
             <groupId>org.springframework</groupId>
-        </dependency>
-
-        <dependency>
             <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
         </dependency>
 
         <dependency>
-            <artifactId>spring-aop</artifactId>
             <groupId>org.springframework</groupId>
-        </dependency>
-
-        <dependency>
             <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
         </dependency>
 
         <dependency>
-            <artifactId>spring-tx</artifactId>
             <groupId>org.springframework</groupId>
-        </dependency>
-
-        <dependency>
-            <artifactId>spring-jdbc</artifactId>
-            <groupId>org.springframework</groupId>
-        </dependency>
-
-        <dependency>
             <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
         </dependency>
 
         <dependency>
-            <artifactId>spring-webmvc</artifactId>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -210,27 +276,90 @@
             <artifactId>yuicompressor</artifactId>
             <version>2.3.6</version>
         </dependency>
-        <!-- Needed for Form Validation -->
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>2.0</version>
         </dependency>
+
         <!--  Gson: Java to Json conversion -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>${solr.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>0.90.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.swordapp</groupId>
+            <artifactId>sword-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+        </dependency>
+
+        <dependency>
+            <!-- This is also packed in (not a dependency of) yuicompressor,
+                 so not possible to satisfy dependency:analyze either way. -->
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.6R7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
         </dependency>
 
     </dependencies>
