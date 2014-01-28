@@ -517,6 +517,17 @@
 	    	<artifactId>backport-util-concurrent</artifactId>
 	    	<version>3.1</version>
 		</dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>inject</artifactId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>

@@ -72,30 +72,37 @@ public class IdentifierServiceImpl implements IdentifierService {
     }
 
     @Override
-    public void register(Context context, DSpaceObject dso) throws AuthorizeException, SQLException, IdentifierException {
+    public void register(Context context, DSpaceObject dso, IdentifierServiceCallback cb)
+            throws AuthorizeException, SQLException, IdentifierException
+    {
         //We need to commit our context because one of the providers might require the handle created above
         // Next resolve all other services
         for (IdentifierProvider service : providers)
         {
-            service.register(context, dso);
+            if (null != cb && cb.registerP(service.getClass()))
+                service.register(context, dso);
         }
         //Update our item
         dso.update();
     }
 
     @Override
-    public void register(Context context, DSpaceObject object, String identifier) throws AuthorizeException, SQLException, IdentifierException {
+    public void register(Context context, DSpaceObject object, String identifier,
+            IdentifierServiceCallback cb)
+            throws AuthorizeException, SQLException, IdentifierException
+    {
 
         //We need to commit our context because one of the providers might require the handle created above
         // Next resolve all other services
         boolean registered = false;
         for (IdentifierProvider service : providers)
         {
-            if (service.supports(identifier))
-            {
-                service.register(context, object, identifier);
-                registered = true;
-            }
+            if (null != cb && cb.registerP(service.getClass()))
+                if (service.supports(identifier))
+                {
+                    service.register(context, object, identifier);
+                    registered = true;
+                }
         }
         if (!registered)
         {

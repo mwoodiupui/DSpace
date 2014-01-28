@@ -61,12 +61,14 @@ public class InstallItem
     {
         Item item = is.getItem();
         IdentifierService identifierService = new DSpace().getSingletonService(IdentifierService.class);
+        InstallItemIdentifierServiceCallback cb = new InstallItemIdentifierServiceCallback(is.getCollection().getID());
+
         try {
             if(suppliedHandle == null)
             {
-                identifierService.register(c, item);
+                identifierService.register(c, item, cb);
             }else{
-                identifierService.register(c, item, suppliedHandle);
+                identifierService.register(c, item, suppliedHandle, cb);
             }
         } catch (IdentifierException e) {
             throw new RuntimeException("Can't create an Identifier!", e);
@@ -101,12 +103,13 @@ public class InstallItem
         Item item = is.getItem();
 
         IdentifierService identifierService = new DSpace().getSingletonService(IdentifierService.class);
+        InstallItemIdentifierServiceCallback cb = new InstallItemIdentifierServiceCallback(is.getCollection().getID());
         try {
             if(suppliedHandle == null)
             {
-                identifierService.register(c, item);
+                identifierService.register(c, item, cb);
             }else{
-                identifierService.register(c, item, suppliedHandle);
+                identifierService.register(c, item, suppliedHandle, cb);
             }
         } catch (IdentifierException e) {
             throw new RuntimeException("Can't create an Identifier!");

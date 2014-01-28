@@ -85,7 +85,8 @@ public interface IdentifierService {
      * @throws java.sql.SQLException
      * @throws IdentifierException
      */
-    void register(Context context, DSpaceObject dso) throws AuthorizeException, SQLException, IdentifierException;
+    void register(Context context, DSpaceObject dso, IdentifierServiceCallback cb)
+            throws AuthorizeException, SQLException, IdentifierException;
 
     /**
      *
@@ -101,7 +102,8 @@ public interface IdentifierService {
      * @throws java.sql.SQLException
      * @throws IdentifierException
      */
-    void register(Context context, DSpaceObject dso, String identifier) throws AuthorizeException, SQLException, IdentifierException;
+    void register(Context context, DSpaceObject dso, String identifier, IdentifierServiceCallback cb)
+            throws AuthorizeException, SQLException, IdentifierException;
 
     /**
      * Delete (Unbind) all identifiers registered for a specific DSpace item. Identifiers are "unbound" across
