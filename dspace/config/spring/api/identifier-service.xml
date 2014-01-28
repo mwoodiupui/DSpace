@@ -21,7 +21,31 @@
           autowire="byType"
           scope="singleton"/>
 
-   <!-- provider for using the versioned handle identifier instead of the default one. -->
+    <!-- Configure selective application of IdentifierProviders per Collection. -->
+    <!-- An abuse of Spring:  this instance is never used, just statically configured. -->
+     <bean id='org.dspace.content.InstallItemIdentifierServiceCallback'
+          class='org.dspace.content.InstallItemIdentifierServiceCallback'
+          scope='singleton'
+          lazy-init='false'>
+        <property name='wantedIdentifierClassesMap'>
+            <!-- Value should be a Map<Integer, Set<Class<?extends IdentifierProvider>>>.
+                 Each map entry's key is the database ID of some Collection.
+                 Each map entry's value is a set of IdentifierProvider classes acceptable to the Collection.
+                 Only those providers will be called when assigning identifiers to an Item entering the Collection.
+            -->
+            <map>
+                <!-- Example:
+                <entry key="3">
+                    <set>
+                        org.dspace.identifier.FooProvider.class
+                    </set>
+                </entry>
+                -->
+            </map>
+        </property>
+    </bean>
+
+    <!-- provider for using the versioned handle identifier instead of the default one. -->
     <!--<bean id="org.dspace.identifier.HandleIdentifierProvider" class="org.dspace.identifier.VersionedHandleIdentifierProvider"-->
           <!--scope="singleton">-->
         <!--<property name="configurationService" ref="org.dspace.services.ConfigurationService"/>-->

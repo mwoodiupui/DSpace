@@ -25,8 +25,7 @@ public class InstallItemIdentifierServiceCallback
      * Configure with Spring or some such.
      * TODO: replace this ugliness with Collection metadata or properties.
      */
-    @Inject
-    Map<Integer, Set<Class>> wantedIdentifierClassesMap;
+    private static Map<Integer, Set<Class>> wantedIdentifierClassesMap;
 
     /** IdentifierProviders for this collection. */
     private final Set<Class> wantedIdentifierClasses;
@@ -42,6 +41,18 @@ public class InstallItemIdentifierServiceCallback
     public InstallItemIdentifierServiceCallback(int collection)
     {
         wantedIdentifierClasses = wantedIdentifierClassesMap.get(collection);
+    }
+
+    /** Set the map between Collection and IdentifierProvider sets. */
+    @Inject
+    public void setWantedIdentiferClassesMap(Map<Integer, Set<Class>>map)
+    {
+        // XXX This is perhaps abusive.  We configure the class by
+        // having Spring instantiate it and call the setter, stash the
+        // configuration in a static reference, and then never use
+        // that instance.
+        // FIXME this should be done with Collection metadata when we have it.
+        wantedIdentifierClassesMap = map;
     }
 
     @Override
