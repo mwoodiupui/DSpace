@@ -253,7 +253,8 @@ CREATE TABLE MetadataSchemaRegistry
 (
   metadata_schema_id INTEGER PRIMARY KEY,
   namespace          VARCHAR(256) UNIQUE,
-  short_id           VARCHAR(32) UNIQUE
+  short_id           VARCHAR(32) UNIQUE,
+  immutable          INTEGER NOT NULL DEFAULT 0 CHECK(immutable IN (0, 1))
 );
 
 CREATE TABLE MetadataFieldRegistry

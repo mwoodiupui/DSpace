@@ -55,6 +55,7 @@ public class MetadataSchema
     private int schemaID;
     private String namespace;
     private String name;
+    private boolean immutable;
 
     // cache of schema by ID (Integer)
     private static Map<Integer, MetadataSchema> id2schema = null;
@@ -82,6 +83,7 @@ public class MetadataSchema
         this.schemaID = schemaID;
         this.namespace = namespace;
         this.name = name;
+        this.immutable = false;
     }
 
     /**
@@ -94,6 +96,7 @@ public class MetadataSchema
     {
         this.namespace = namespace;
         this.name = name;
+        this.immutable = false;
     }
 
     /**
@@ -108,6 +111,7 @@ public class MetadataSchema
             this.schemaID = row.getIntColumn("metadata_schema_id");
             this.namespace = row.getStringColumn("namespace");
             this.name = row.getStringColumn("short_id");
+            this.immutable = row.getBooleanColumn("immutable");
             this.row = row;
         }
     }
@@ -187,6 +191,24 @@ public class MetadataSchema
     }
 
     /**
+     * Is this schema immutable?
+     */
+    public boolean isImmutable()
+    {
+        return immutable;
+    }
+
+    /**
+     * Set immutable or not.
+     *
+     * @param isIt yes or no?
+     */
+    public void setImmutable(boolean isIt)
+    {
+        immutable = isIt;
+    }
+
+    /**
      * Get the schema record key number.
      *
      * @return schema record key
@@ -234,6 +256,7 @@ public class MetadataSchema
         row = DatabaseManager.row("MetadataSchemaRegistry");
         row.setColumn("namespace", namespace);
         row.setColumn("short_id", name);
+        row.setColumn("immutable", immutable);
         DatabaseManager.insert(context, row);
 
         // invalidate our fast-find cache.
@@ -325,6 +348,7 @@ public class MetadataSchema
         
         row.setColumn("namespace", getNamespace());
         row.setColumn("short_id", getName());
+        row.setColumn("immutable", immutable);
         DatabaseManager.update(context, row);
 
         decache();

@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 public class RegistryLoader
 {
     /** log4j category */
-    private static Logger log = Logger.getLogger(RegistryLoader.class);
+    private static final Logger log = Logger.getLogger(RegistryLoader.class);
 
     /**
      * For invoking via the command line
@@ -238,16 +238,18 @@ public class RegistryLoader
     	// Get the values
         String shortname = getElementData(node, "name");
         String namespace = getElementData(node, "namespace");
+        String immutable = getElementData(node, "immutable");
 
         // Check if the schema exists already
         MetadataSchema schema = MetadataSchema.find(context, shortname);
         if (schema == null)
         {
-        	// If not create it.
-        	schema = new MetadataSchema();
-        	schema.setNamespace(namespace);
-        	schema.setName(shortname);
-        	schema.create(context);
+            // If not create it.
+            schema = new MetadataSchema();
+            schema.setNamespace(namespace);
+            schema.setName(shortname);
+            schema.setImmutable(Boolean.valueOf(immutable));
+            schema.create(context);
         }
     }
     
