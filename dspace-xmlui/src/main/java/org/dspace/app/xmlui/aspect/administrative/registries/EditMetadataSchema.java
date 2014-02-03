@@ -104,6 +104,7 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 		message("xmlui.administrative.registries.EditMetadataSchema.error_qualifier_badchar");	
 	
 	
+    @Override
 	public void addPageMeta(PageMeta pageMeta) throws WingException
     {
         pageMeta.addMetadata("title").addContent(T_title);
@@ -113,6 +114,7 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
     }
 	
 	
+    @Override
 	public void addBody(Body body) throws WingException, SQLException 
 	{
 		// Get our parameters & state
@@ -123,6 +125,7 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 		MetadataField[] fields = MetadataField.findAllInSchema(context, schemaID);
 		String schemaName = schema.getName();
 		String schemaNamespace = schema.getNamespace();
+        boolean immutable = schema.isImmutable();
 		
 		String errorString = parameters.getParameter("errors",null);
 		ArrayList<String> errors = new ArrayList<String>();
@@ -133,8 +136,8 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 				errors.add(error);
             }
 		}
-		
-	
+
+
         // DIVISION: edit-schema
 		Division main = body.addInteractiveDivision("metadata-schema-edit",contextPath+"/admin/metadata-registry",Division.METHOD_POST,"primary administrative metadata-registry");
 		main.setHead(T_head1.parameterize(schemaName));
@@ -145,16 +148,18 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 		if (updateID >= 0)
         {
             // Updating an existing field
-            addUpdateFieldForm(main, schemaName, updateID, errors);
+            if (!immutable)
+                addUpdateFieldForm(main, schemaName, updateID, errors);
         }
 		else
         {
             // Add a new field
-            addNewFieldForm(main, schemaName, errors);
+            if (!immutable)
+                addNewFieldForm(main, schemaName, errors);
         }
-		
-		
-		
+
+
+
 		// DIVISION: existing fields
 		Division existingFields = main.addDivision("metadata-schema-edit-existing-fields");
 		existingFields.setHead(T_head2);
@@ -200,6 +205,7 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
             }
 			
 			CheckBox select = row.addCell().addCheckBox("select_field");
+            select.setDisabled(immutable);
 			select.setLabel(id);
 			select.addOption(id);
 			
@@ -218,8 +224,9 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 		{
 			// Only show the actions if there are fields available to perform them on.
 			Para actions = main.addPara();
-			actions.addButton("submit_delete").setValue(T_submit_delete);
-			if (MetadataSchema.findAll(context).length > 1)
+            if (!immutable)
+                actions.addButton("submit_delete").setValue(T_submit_delete);
+			if (MetadataSchema.findAll(context).length > 1 && (!immutable))
             {
                 actions.addButton("submit_move").setValue(T_submit_move);
             }
@@ -344,9 +351,9 @@ public class EditMetadataSchema extends AbstractDSpaceTransformer
 	}
 	
 	/**
-	 * Determine if there were any special errors and display approparte 
-	 * text. Because of the inline nature of the element and qualifier 
-	 * fields these errors can not be placed on the field. Instead they 
+	 * Determine if there were any special errors and display appropriate
+	 * text. Because of the inline nature of the element and qualifier
+	 * fields these errors can not be placed on the field. Instead they
 	 * have to be added as separate items above the field.
 	 * 
 	 * @param form The form to add errors to.

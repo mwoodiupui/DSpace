@@ -105,14 +105,21 @@ if (error!=null) {
                     	<label class="sr-only" for="scope_note"><fmt:message key="jsp.dspace-admin.list-metadata-fields.scope"/></label>
                 		<textarea class="form-control" name="scope_note" rows="3" cols="40"><%= (types[i].getScopeNote() == null ? "" : types[i].getScopeNote()) %></textarea>
                 	</div>                             
-                         
+
+<%
+    if (!schema.isImmutable())
+    {
+%>
 					<div class="btn-group pull-right">                             
                          
                             <input type="hidden" name="dc_type_id" value="<%= types[i].getFieldID() %>"/>
                             <input class="btn btn-primary" type="submit" name="submit_update" value="<fmt:message key="jsp.dspace-admin.general.update"/>"/>             
                          
                             <input class="btn btn-danger" type="submit" name="submit_delete" value="<fmt:message key="jsp.dspace-admin.general.delete-w-confirm"/>"/>
-                    </div>     
+                    </div>
+<%
+    }
+%>
              </form>
          </td>
       </tr>
