@@ -41,18 +41,17 @@ import org.apache.log4j.helpers.OptionConverter;
  * @author Robert Tansley
  * @author Larry Stone - Interpolated values.
  * @author Mark Diggory - General Improvements to detection, logging and loading.
- * @version $Revision$
  */
 public class ConfigurationManager
 {
     /** log4j category */
-    private static Logger log = Logger.getLogger(ConfigurationManager.class);
+    private static final Logger log = Logger.getLogger(ConfigurationManager.class);
 
     /** The configuration properties */
     private static Properties properties = null;
 
     /** module configuration properties */
-    private static Map<String, Properties> moduleProps = new HashMap<String, Properties>();
+    private static final Map<String, Properties> moduleProps = new HashMap<String, Properties>();
 
     // limit of recursive depth of property variable interpolation in
     // configuration; anything greater than this is very likely to be a loop.
@@ -76,32 +75,6 @@ public class ConfigurationManager
     {
         return moduleProps.get(module) != null;
     }
-
-    /**
-     * REMOVED - Flushing the properties could be dangerous in the current DSpace state
-     * Need to consider how it will affect in-flight processes
-     *
-     * Discard all current properties - will force a reload from disk when
-     * any properties are requested.
-     */
-//    public static void flush()
-//    {
-//        properties = null;
-//    }
-
-    /**
-     * REMOVED - Flushing the properties could be dangerous in the current DSpace state
-     * Need to consider how it will affect in-flight processes
-     *
-     * Discard properties for a module -  will force a reload from disk
-     * when any of module's properties are requested
-     *
-     * @param module the module name
-     */
-//    public static void flush(String module)
-//    {
-//        moduleProps.remove(module);
-//    }
 
     /**
      * Returns all properties in main configuration
@@ -874,7 +847,7 @@ public class ConfigurationManager
                 else
                 {
                     log.warn("Interpolation failed in value of property \""+key+
-                             "\", there is no property named \""+var+"\"");
+                             "\" because there is no property named \""+var+"\"");
                 }
                 from = end+1;
             }

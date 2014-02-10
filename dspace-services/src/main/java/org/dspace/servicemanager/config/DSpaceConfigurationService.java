@@ -451,17 +451,6 @@ public final class DSpaceConfigurationService implements ConfigurationService {
         }
         pushPropsToMap(configMap, readPropertyFile(configPath));
 
-//      TODO: still use this local file loading?
-//        pushPropsToMap(configMap, readPropertyFile(homePath + File.separatorChar + "local" + DOT_PROPERTIES));
-
-
-//        pushPropsToMap(configMap, readPropertyResource(DSPACE + DOT_PROPERTIES));
-//        pushPropsToMap(configMap, readPropertyResource("local" + DOT_PROPERTIES));
-//        pushPropsToMap(configMap, readPropertyResource("webapp" + DOT_PROPERTIES));
-
-
-
-
         // now push all of these into the config service store
         loadConfiguration(configMap, true);
         log.info("Started up configuration service and loaded "+configMap.size()+" settings");
