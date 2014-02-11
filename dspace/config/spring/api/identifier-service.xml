@@ -23,7 +23,7 @@
 
     <!-- Configure selective application of IdentifierProviders per Collection. -->
     <!-- An abuse of Spring:  this instance is never used, just statically configured. -->
-     <bean id='org.dspace.content.InstallItemIdentifierServiceCallback'
+    <bean id='org.dspace.content.InstallItemIdentifierServiceCallback'
           class='org.dspace.content.InstallItemIdentifierServiceCallback'
           scope='singleton'
           lazy-init='false'>
@@ -32,12 +32,13 @@
                  Each map entry's key is the database ID of some Collection.
                  Each map entry's value is a set of IdentifierProvider classes acceptable to the Collection.
                  Only those providers will be called when assigning identifiers to an Item entering the Collection.
+                 Collection "-1" provides a default map for otherwise unconfigured Collections.
             -->
             <map>
                 <!-- Example:
                 <entry key="3">
                     <set>
-                        org.dspace.identifier.FooProvider.class
+                        <value>org.dspace.identifier.FooProvider</value>
                     </set>
                 </entry>
                 -->
