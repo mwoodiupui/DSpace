@@ -29,25 +29,27 @@ public class IdentifierServiceImpl implements IdentifierService {
     private List<IdentifierProvider> providers;
 
     /** log4j category */
-    private static Logger log = Logger.getLogger(IdentifierServiceImpl.class);
+    private static final Logger log = Logger.getLogger(IdentifierServiceImpl.class);
 
     @Autowired
-   @Required
-   public void setProviders(List<IdentifierProvider> providers)
-   {
-       this.providers = providers;
+    @Required
+    public void setProviders(List<IdentifierProvider> providers)
+    {
+        this.providers = providers;
 
-       for(IdentifierProvider p : providers)
-       {
-           p.setParentService(this);
-       }
-   }
+        for(IdentifierProvider p : providers)
+        {
+            log.debug(p.getClass().getName());
+            p.setParentService(this);
+        }
+    }
 
     /**
      * Reserves identifiers for the item
      * @param context dspace context
      * @param dso dspace object
      */
+    @Override
     public void reserve(Context context, DSpaceObject dso) throws AuthorizeException, SQLException, IdentifierException {
         for (IdentifierProvider service : providers)
         {
@@ -80,7 +82,9 @@ public class IdentifierServiceImpl implements IdentifierService {
         for (IdentifierProvider service : providers)
         {
             if (null != cb && cb.registerP(service.getClass()))
+            {
                 service.register(context, dso);
+            }
         }
         //Update our item
         dso.update();
@@ -98,11 +102,13 @@ public class IdentifierServiceImpl implements IdentifierService {
         for (IdentifierProvider service : providers)
         {
             if (null != cb && cb.registerP(service.getClass()))
+            {
                 if (service.supports(identifier))
                 {
                     service.register(context, object, identifier);
                     registered = true;
                 }
+            }
         }
         if (!registered)
         {
@@ -132,6 +138,7 @@ public class IdentifierServiceImpl implements IdentifierService {
         return null;
     }
 
+    @Override
     public DSpaceObject resolve(Context context, String identifier) throws IdentifierNotFoundException, IdentifierNotResolvableException{
         for (IdentifierProvider service : providers)
         {
@@ -152,6 +159,7 @@ public class IdentifierServiceImpl implements IdentifierService {
         return null;
     }
 
+    @Override
     public void delete(Context context, DSpaceObject dso) throws AuthorizeException, SQLException, IdentifierException {
        for (IdentifierProvider service : providers)
        {

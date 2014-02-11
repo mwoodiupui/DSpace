@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import org.dspace.identifier.IdentifierProvider;
 import org.dspace.identifier.IdentifierServiceCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Inform IdentifierService whether we want this kind of identifiers.
@@ -25,6 +27,10 @@ import org.dspace.identifier.IdentifierServiceCallback;
 public class InstallItemIdentifierServiceCallback
         implements IdentifierServiceCallback
 {
+    /** Logging category */
+    private static final Logger log
+            = LoggerFactory.getLogger(InstallItemIdentifierServiceCallback.class);
+
     /**
      * Map collectionIDs to sets of IdentifierProvider.
      * Configure with Spring or some such.
@@ -52,6 +58,7 @@ public class InstallItemIdentifierServiceCallback
      */
     public InstallItemIdentifierServiceCallback(int collection)
     {
+        log.debug("Create callback for Collection {}", collection);
         wantedIdentifierClasses = wantedIdentifierClassesMap.get(collection);
     }
 
@@ -65,7 +72,10 @@ public class InstallItemIdentifierServiceCallback
         // that instance.
         // FIXME this should be done with Collection metadata when we have it.
         wantedIdentifierClassesMap = map;
+        log.debug("set map {}", wantedIdentifierClassesMap);
+
         defaultIdentifierClasses = wantedIdentifierClassesMap.get(-1);
+        log.debug("default map = {}", defaultIdentifierClasses);
     }
 
     /**
@@ -90,12 +100,19 @@ public class InstallItemIdentifierServiceCallback
     @Override
     public boolean registerP(Class<?extends IdentifierProvider> clazz)
     {
+        log.debug("Provider:  {}", clazz.getName());
         if (null == wantedIdentifierClasses) // This Collection not configured
         {
+            log.debug("No configuration.");
             if (null == defaultIdentifierClasses) // Default not configured either
+            {
+                log.debug("No default.");
                 return true; // Default default:  all providers wanted
+            }
             else
+            {
                 return defaultIdentifierClasses.contains(clazz); // Wanted by default?
+            }
         }
         else
             return wantedIdentifierClasses.contains(clazz); // Wanted by this Collection?
