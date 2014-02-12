@@ -45,8 +45,9 @@ public class InstallItemIdentifierServiceCallback
     private static Set<Class> defaultIdentifierClasses;
 
     /** Do not use */
-    private InstallItemIdentifierServiceCallback()
+    public InstallItemIdentifierServiceCallback()
     {
+        log.debug("Default constructor called.");
         wantedIdentifierClasses = defaultIdentifierClasses = null;
     }
 
@@ -106,15 +107,21 @@ public class InstallItemIdentifierServiceCallback
             log.debug("No configuration.");
             if (null == defaultIdentifierClasses) // Default not configured either
             {
-                log.debug("No default.");
+                log.debug("No default:  Result true.");
                 return true; // Default default:  all providers wanted
             }
             else
             {
-                return defaultIdentifierClasses.contains(clazz); // Wanted by default?
+                boolean wanted = defaultIdentifierClasses.contains(clazz); // Wanted by default?
+                log.debug("Applying default {}:  result {}.", defaultIdentifierClasses, wanted);
+                return wanted;
             }
         }
         else
-            return wantedIdentifierClasses.contains(clazz); // Wanted by this Collection?
+        {
+            boolean wanted = wantedIdentifierClasses.contains(clazz); // Wanted by this Collection?
+            log.debug("Applying specific {}:  result {}", wantedIdentifierClasses, wanted);
+            return wanted;
+        }
     }
 }
