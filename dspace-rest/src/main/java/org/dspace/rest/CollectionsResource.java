@@ -7,13 +7,11 @@
  */
 package org.dspace.rest;
 
-
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeManager;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
-import org.dspace.rest.common.Collection;
 import org.dspace.usage.UsageEvent;
 import org.dspace.utils.DSpace;
 
@@ -36,12 +34,12 @@ http://localhost:8080/<webapp>/collections
  */
 @Path("/collections")
 public class CollectionsResource {
-    private static Logger log = Logger.getLogger(CollectionsResource.class);
+    private static final Logger log = Logger.getLogger(CollectionsResource.class);
 
     @javax.ws.rs.core.Context ServletContext servletContext;
-    
+
     private static final boolean writeStatistics;
-	
+
 	static{
 		writeStatistics=ConfigurationManager.getBooleanProperty("rest","stats",false);
 	}
@@ -63,7 +61,7 @@ public class CollectionsResource {
                 collections = org.dspace.content.Collection.findAll(context);
             }
 
-            ArrayList<org.dspace.rest.common.Collection> collectionArrayList = new ArrayList<org.dspace.rest.common.Collection>();
+            ArrayList<org.dspace.rest.common.Collection> collectionArrayList = new ArrayList<>();
             for(org.dspace.content.Collection collection : collections) {
                 if(AuthorizeManager.authorizeActionBoolean(context, collection, org.dspace.core.Constants.READ)) {
                     org.dspace.rest.common.Collection restCollection = new org.dspace.rest.common.Collection(collection, null, context, limit, offset);
@@ -87,10 +85,33 @@ public class CollectionsResource {
         }
     }
 
+    /**
+     * Count our collections.
+     *
+     * @param request
+     * @return number of collections.
+     */
+    @GET
+    @Path("/count")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Long getCount(@Context HttpServletRequest request)
+    {
+        org.dspace.core.Context context;
+        long count;
+        try {
+            context = new org.dspace.core.Context();
+            count = org.dspace.content.Collection.count(context);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return count;
+    }
+
     @GET
     @Path("/{collection_id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public org.dspace.rest.common.Collection getCollection(@PathParam("collection_id") Integer collection_id, @QueryParam("expand") String expand, 
+    public org.dspace.rest.common.Collection getCollection(@PathParam("collection_id") Integer collection_id, @QueryParam("expand") String expand,
     		@QueryParam("limit") @DefaultValue("100") Integer limit, @QueryParam("offset") @DefaultValue("0") Integer offset,
     		@QueryParam("userIP") String user_ip, @QueryParam("userAgent") String user_agent, @QueryParam("xforwarderfor") String xforwarderfor,
     		@Context HttpHeaders headers, @Context HttpServletRequest request) {
@@ -120,14 +141,14 @@ public class CollectionsResource {
             }
         }
     }
-    
+
     private void writeStats(org.dspace.core.Context context, Integer collection_id, String user_ip, String user_agent,
 			String xforwarderfor, HttpHeaders headers,
 			HttpServletRequest request) {
-		
+
     	try{
     		DSpaceObject collection = DSpaceObject.find(context, Constants.COLLECTION, collection_id);
-    		
+
     		if(user_ip==null || user_ip.length()==0){
     			new DSpace().getEventService().fireEvent(
 	                     new UsageEvent(
@@ -146,10 +167,10 @@ public class CollectionsResource {
 	                                     collection));
     		}
     		log.debug("fired event");
-    		
+
 		} catch(SQLException ex){
 			log.error("SQL exception can't write usageEvent \n" + ex);
 		}
-    		
+
 	}
 }

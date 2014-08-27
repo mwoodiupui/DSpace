@@ -7,23 +7,22 @@
  */
 package org.dspace.rest;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeManager;
+import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.usage.UsageEvent;
 import org.dspace.utils.DSpace;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletContext;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 /*
 The "Path" annotation indicates the URI this class will be available at relative to your base URL.  For
@@ -34,10 +33,10 @@ http://localhost:8080/<webapp>/communities
  */
 @Path("/communities")
 public class CommunitiesResource {
-    private static Logger log = Logger.getLogger(CommunitiesResource.class);
+    private static final Logger log = Logger.getLogger(CommunitiesResource.class);
 
     private static final boolean writeStatistics;
-	
+
 	static{
 		writeStatistics=ConfigurationManager.getBooleanProperty("rest","stats",false);
 	}
@@ -51,7 +50,7 @@ public class CommunitiesResource {
             context = new org.dspace.core.Context();
 
             org.dspace.content.Community[] topCommunities = org.dspace.content.Community.findAllTop(context);
-            ArrayList<org.dspace.rest.common.Community> communityArrayList = new ArrayList<org.dspace.rest.common.Community>();
+            ArrayList<org.dspace.rest.common.Community> communityArrayList = new ArrayList<>();
             for(org.dspace.content.Community community : topCommunities) {
                 if(AuthorizeManager.authorizeActionBoolean(context, community, org.dspace.core.Constants.READ)) {
                     //Only list communities that this user has access to.
@@ -74,6 +73,29 @@ public class CommunitiesResource {
                 }
             }
         }
+    }
+
+    /**
+     * Count our communities.
+     *
+     * @param request
+     * @return number of communities.
+     */
+    @GET
+    @Path("/count")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Long getCount(@Context HttpServletRequest request)
+    {
+        org.dspace.core.Context context;
+        long count;
+        try {
+            context = new org.dspace.core.Context();
+            count = Community.count(context);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return count;
     }
 
     @GET
@@ -108,14 +130,14 @@ public class CommunitiesResource {
             }
         }
     }
-    
+
     private void writeStats(org.dspace.core.Context context, Integer community_id, String user_ip, String user_agent,
  			String xforwarderfor, HttpHeaders headers,
  			HttpServletRequest request) {
- 		
+
      	try{
      		DSpaceObject community = DSpaceObject.find(context, Constants.COMMUNITY, community_id);
-     		
+
      		if(user_ip==null || user_ip.length()==0){
      			new DSpace().getEventService().fireEvent(
  	                     new UsageEvent(
@@ -134,10 +156,10 @@ public class CommunitiesResource {
  	                                    community));
      		}
      		log.debug("fired event");
-     		
+
  		} catch(SQLException ex){
  			log.error("SQL exception can't write usageEvent \n" + ex);
  		}
-     		
+
  	}
 }

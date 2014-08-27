@@ -33,13 +33,13 @@ import org.dspace.utils.DSpace;
  */
 @Path("/items")
 public class ItemsResource {
-	
+
 	private static final boolean writeStatistics;
-	
+
 	static{
 		writeStatistics=ConfigurationManager.getBooleanProperty("rest","stats",false);
 	}
-	
+
 	 /** log4j category */
     private static final Logger log = Logger.getLogger(ItemsResource.class);
     //ItemList - Not Implemented
@@ -79,15 +79,37 @@ public class ItemsResource {
             }
         }
     }
-    
-    
+
+    /**
+     * Count our items.
+     *
+     * @param request
+     * @return number of items.
+     */
+    @GET
+    @Path("/count")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Long getCount(@Context HttpServletRequest request)
+    {
+        org.dspace.core.Context context;
+        long count;
+        try {
+            context = new org.dspace.core.Context();
+            count = org.dspace.content.Item.count(context);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return count;
+    }
+
     private void writeStats(org.dspace.core.Context context, Integer item_id, String user_ip, String user_agent,
 			String xforwarderfor, HttpHeaders headers,
 			HttpServletRequest request) {
-		
+
     	try{
     		DSpaceObject item = DSpaceObject.find(context, Constants.ITEM, item_id);
-    		
+
     		if(user_ip==null || user_ip.length()==0){
     			new DSpace().getEventService().fireEvent(
 	                     new UsageEvent(
@@ -106,11 +128,11 @@ public class ItemsResource {
 	                                     item));
     		}
     		log.debug("fired event");
-    		
+
 		} catch(SQLException ex){
 			log.error("SQL exception can't write usageEvent \n" + ex);
 		}
-    		
+
 	}
 
 }

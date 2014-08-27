@@ -9,6 +9,7 @@ package org.dspace.content;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +33,20 @@ import org.dspace.storage.rdbms.TableRowIterator;
  * When modifying the bitstream metadata, changes are not reflected in the
  * database until <code>update</code> is called. Note that you cannot alter
  * the contents of a bitstream; you need to create a new bitstream.
- * 
+ *
  * @author Robert Tansley
  * @version $Revision$
  */
 public class Bitstream extends DSpaceObject
 {
     /** log4j logger */
-    private static Logger log = Logger.getLogger(Bitstream.class);
+    private static final Logger log = Logger.getLogger(Bitstream.class);
 
     /** Our context */
-    private Context bContext;
+    private final Context bContext;
 
     /** The row in the table representing this bitstream */
-    private TableRow bRow;
+    private final TableRow bRow;
 
     /** The bitstream format corresponding to this bitstream */
     private BitstreamFormat bitstreamFormat;
@@ -59,7 +60,7 @@ public class Bitstream extends DSpaceObject
     /**
      * Private constructor for creating a Bitstream object based on the contents
      * of a DB table row.
-     * 
+     *
      * @param context
      *            the context this object exists in
      * @param row
@@ -96,14 +97,64 @@ public class Bitstream extends DSpaceObject
     }
 
     /**
+     * Count all bitstreams.
+     *
+     * @param ctx
+     * @return number of bitstreams.
+     * @throws SQLException if a database error occurs.
+     */
+    public static long count(Context ctx)
+            throws SQLException
+    {
+        TableRow row = DatabaseManager.querySingleTable(ctx, "Bitstream",
+                "SELECT COUNT(*) AS count FROM Bitstream");
+        return null == row ? 0 : row.getLongColumn("count");
+    }
+
+    /**
+     * Sum of bitstream sizes.
+     *
+     * @param ctx
+     * @param type MIME type ("image/png") or pattern ("image/*").  Not a full wildcard match.
+     * @return total bytes over all matching bitstreams.
+     * @throws SQLException
+     */
+    public static BigDecimal total(Context ctx, String type)
+            throws SQLException
+    {
+        String query = "SELECT SUM(size_bytes) FROM Bitstream";
+        String mimeType = "";
+        if (null != type && !type.isEmpty())
+        {
+            query +=  " JOIN bitstreamformatregistry USING(bitstream_format_id)"
+                    + " JOIN bundle2bitstream USING(bitstream_id)"
+                    + " JOIN bundle USING(bundle_id)"
+                    + " JOIN item2bundle USING(bundle_id)"
+                    + " JOIN item USING(item_id)"
+                    + " WHERE bundle.name = 'ORIGINAL'"
+                    + "  AND mimetype LIKE ?"
+                    + "  AND CAST(ITEM.DELETED AS INTEGER) = 0"
+                    + "  AND CAST(ITEM.WITHDRAWN AS INTEGER) = 0;";
+            if (type.endsWith("/*"))
+                mimeType = type.substring(0, mimeType.length()-2) + "%";
+            else
+                mimeType = type;
+        }
+
+        TableRow row = DatabaseManager.querySingleTable(ctx, "Bitstream",
+                query, mimeType);
+        return (null == row) ? BigDecimal.ZERO : row.getNumericColumn("count");
+    }
+
+    /**
      * Get a bitstream from the database. The bitstream metadata is loaded into
      * memory.
-     * 
+     *
      * @param context
      *            DSpace context object
      * @param id
      *            ID of the bitstream
-     * 
+     *
      * @return the bitstream, or null if the ID is invalid.
      * @throws SQLException
      */
@@ -146,7 +197,7 @@ public class Bitstream extends DSpaceObject
         TableRowIterator tri = DatabaseManager.queryTable(context, "bitstream",
                 "SELECT * FROM bitstream");
 
-        List<Bitstream> bitstreams = new ArrayList<Bitstream>();
+        List<Bitstream> bitstreams = new ArrayList<>();
 
         try
         {
@@ -188,12 +239,12 @@ public class Bitstream extends DSpaceObject
      * calculated. This method is not public, and does not check authorisation;
      * other methods such as Bundle.createBitstream() will check authorisation.
      * The newly created bitstream has the "unknown" format.
-     * 
+     *
      * @param context
      *            DSpace context object
      * @param is
      *            the bits to put in the bitstream
-     * 
+     *
      * @return the newly created bitstream
      * @throws IOException
      * @throws SQLException
@@ -225,12 +276,12 @@ public class Bitstream extends DSpaceObject
      *
      * @param  context DSpace context object
      * @param assetstore corresponds to an assetstore in dspace.cfg
-     * @param bitstreamPath the path and filename relative to the assetstore 
+     * @param bitstreamPath the path and filename relative to the assetstore
      * @return  the newly registered bitstream
      * @throws IOException
      * @throws SQLException
      */
-    static Bitstream register(Context context, 
+    static Bitstream register(Context context,
     		int assetstore, String bitstreamPath)
         	throws IOException, SQLException
     {
@@ -253,14 +304,16 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the internal identifier of this bitstream
-     * 
+     *
      * @return the internal identifier
      */
+    @Override
     public int getID()
     {
         return bRow.getIntColumn("bitstream_id");
     }
 
+    @Override
     public String getHandle()
     {
         // No Handles for bitstreams
@@ -269,7 +322,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the sequence ID of this bitstream
-     * 
+     *
      * @return the sequence ID
      */
     public int getSequenceID()
@@ -279,7 +332,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Set the sequence ID of this bitstream
-     * 
+     *
      * @param sid
      *            the ID
      */
@@ -293,9 +346,10 @@ public class Bitstream extends DSpaceObject
     /**
      * Get the name of this bitstream - typically the filename, without any path
      * information
-     * 
+     *
      * @return the name of the bitstream
      */
+    @Override
     public String getName()
     {
         return bRow.getStringColumn("name");
@@ -303,7 +357,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Set the name of the bitstream
-     * 
+     *
      * @param n
      *            the new name of the bitstream
      */
@@ -318,7 +372,7 @@ public class Bitstream extends DSpaceObject
      * Get the source of this bitstream - typically the filename with path
      * information (if originally provided) or the name of the tool that
      * generated this bitstream
-     * 
+     *
      * @return the source of the bitstream
      */
     public String getSource()
@@ -328,7 +382,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Set the source of the bitstream
-     * 
+     *
      * @param n
      *            the new source of the bitstream
      */
@@ -342,7 +396,7 @@ public class Bitstream extends DSpaceObject
     /**
      * Get the description of this bitstream - optional free text, typically
      * provided by a user at submission time
-     * 
+     *
      * @return the description of the bitstream
      */
     public String getDescription()
@@ -352,7 +406,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Set the description of the bitstream
-     * 
+     *
      * @param n
      *            the new description of the bitstream
      */
@@ -365,7 +419,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the checksum of the content of the bitstream, for integrity checking
-     * 
+     *
      * @return the checksum
      */
     public String getChecksum()
@@ -375,7 +429,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the algorithm used to calculate the checksum
-     * 
+     *
      * @return the algorithm, e.g. "MD5"
      */
     public String getChecksumAlgorithm()
@@ -385,7 +439,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the size of the bitstream
-     * 
+     *
      * @return the size in bytes
      */
     public long getSize()
@@ -396,7 +450,7 @@ public class Bitstream extends DSpaceObject
     /**
      * Set the user's format description. This implies that the format of the
      * bitstream is uncertain, and the format is set to "unknown."
-     * 
+     *
      * @param desc
      *            the user's description of the format
      * @throws SQLException
@@ -414,7 +468,7 @@ public class Bitstream extends DSpaceObject
     /**
      * Get the user's format description. Returns null if the format is known by
      * the system.
-     * 
+     *
      * @return the user's format description.
      */
     public String getUserFormatDescription()
@@ -425,7 +479,7 @@ public class Bitstream extends DSpaceObject
     /**
      * Get the description of the format - either the user's or the description
      * of the format defined by the system.
-     * 
+     *
      * @return a description of the format.
      */
     public String getFormatDescription()
@@ -449,7 +503,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the format of the bitstream
-     * 
+     *
      * @return the format of this bitstream
      */
     public BitstreamFormat getFormat()
@@ -461,7 +515,7 @@ public class Bitstream extends DSpaceObject
      * Set the format of the bitstream. If the user has supplied a type
      * description, it is cleared. Passing in <code>null</code> sets the type
      * of this bitstream to "unknown".
-     * 
+     *
      * @param f
      *            the format of this bitstream, or <code>null</code> for
      *            unknown
@@ -492,10 +546,11 @@ public class Bitstream extends DSpaceObject
     /**
      * Update the bitstream metadata. Note that the content of the bitstream
      * cannot be changed - for that you need to create a new bitstream.
-     * 
+     *
      * @throws SQLException
      * @throws AuthorizeException
      */
+    @Override
     public void update() throws SQLException, AuthorizeException
     {
         // Check authorisation
@@ -521,7 +576,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Delete the bitstream, including any mappings to bundles
-     * 
+     *
      * @throws SQLException
      */
     void delete() throws SQLException
@@ -582,13 +637,13 @@ public class Bitstream extends DSpaceObject
                 tri.close();
             }
         }
-        
+
         return count == 1;
     }
 
     /**
      * Retrieve the contents of the bitstream
-     * 
+     *
      * @return a stream from which the bitstream can be read.
      * @throws IOException
      * @throws SQLException
@@ -606,7 +661,7 @@ public class Bitstream extends DSpaceObject
 
     /**
      * Get the bundles this bitstream appears in
-     * 
+     *
      * @return array of <code>Bundle</code> s this bitstream appears in
      * @throws SQLException
      */
@@ -614,13 +669,13 @@ public class Bitstream extends DSpaceObject
     {
         // Get the bundle table rows
         TableRowIterator tri = DatabaseManager.queryTable(bContext, "bundle",
-                "SELECT bundle.* FROM bundle, bundle2bitstream WHERE " + 
+                "SELECT bundle.* FROM bundle, bundle2bitstream WHERE " +
                 "bundle.bundle_id=bundle2bitstream.bundle_id AND " +
                 "bundle2bitstream.bitstream_id= ? ",
                  bRow.getIntColumn("bitstream_id"));
 
         // Build a list of Bundle objects
-        List<Bundle> bundles = new ArrayList<Bundle>();
+        List<Bundle> bundles = new ArrayList<>();
         try
         {
             while (tri.hasNext())
@@ -658,29 +713,30 @@ public class Bitstream extends DSpaceObject
 
     /**
      * return type found in Constants
-     * 
+     *
      * @return int Constants.BITSTREAM
      */
+    @Override
     public int getType()
     {
         return Constants.BITSTREAM;
     }
-    
+
     /**
      * Determine if this bitstream is registered (available elsewhere on
      * filesystem than in assetstore). More about registered items:
      * https://wiki.duraspace.org/display/DSDOC3x/Registering+(not+Importing)+Bitstreams+via+Simple+Archive+Format
-     * 
+     *
      * @return true if the bitstream is registered, false otherwise
      */
     public boolean isRegisteredBitstream() {
         return BitstreamStorageManager
 				.isRegisteredBitstream(bRow.getStringColumn("internal_id"));
     }
-    
+
     /**
      * Get the asset store number where this bitstream is stored
-     * 
+     *
      * @return the asset store number of the bitstream
      */
     public int getStoreNumber() {
@@ -694,7 +750,8 @@ public class Bitstream extends DSpaceObject
      *
      * @return this bitstream's parent.
      * @throws SQLException
-     */    
+     */
+    @Override
     public DSpaceObject getParentObject() throws SQLException
     {
         Bundle[] bundles = getBundles();
@@ -717,17 +774,17 @@ public class Bitstream extends DSpaceObject
             TableRow qResult = DatabaseManager.querySingle(bContext,
                        "SELECT collection_id FROM collection " +
                        "WHERE logo_bitstream_id = ?",getID());
-            if (qResult != null) 
+            if (qResult != null)
             {
                 return Collection.find(bContext,qResult.getIntColumn("collection_id"));
             }
             else
-            {   
+            {
                 // is the bitstream related to a community?
                 qResult = DatabaseManager.querySingle(bContext,
                         "SELECT community_id FROM community " +
                         "WHERE logo_bitstream_id = ?",getID());
-    
+
                 if (qResult != null)
                 {
                     return Community.find(bContext,qResult.getIntColumn("community_id"));
@@ -736,7 +793,7 @@ public class Bitstream extends DSpaceObject
                 {
                     return null;
                 }
-            }                                   
+            }
         }
     }
 

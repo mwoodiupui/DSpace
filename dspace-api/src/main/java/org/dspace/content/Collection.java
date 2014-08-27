@@ -55,13 +55,13 @@ import java.util.MissingResourceException;
 public class Collection extends DSpaceObject
 {
     /** log4j category */
-    private static Logger log = Logger.getLogger(Collection.class);
+    private static final Logger log = Logger.getLogger(Collection.class);
 
     /** Our context */
-    private Context ourContext;
+    private final Context ourContext;
 
     /** The table row corresponding to this item */
-    private TableRow collectionRow;
+    private final TableRow collectionRow;
 
     /** The logo bitstream */
     private Bitstream logo;
@@ -96,7 +96,7 @@ public class Collection extends DSpaceObject
     public static final String SHORT_DESCRIPTION = "short_description";
     public static final String SIDEBAR_TEXT = "side_bar_text";
     public static final String PROVENANCE_TEXT = "provenance_description";
-    
+
     /**
      * Construct a collection with the given table row
      *
@@ -152,6 +152,21 @@ public class Collection extends DSpaceObject
         modified = false;
         modifiedMetadata = false;
         clearDetails();
+    }
+
+    /**
+     * Count all collections.
+     *
+     * @param ctx
+     * @return number of collections.
+     * @throws SQLException if a database error occurs.
+     */
+    public static long count(Context ctx)
+            throws SQLException
+    {
+        TableRow row = DatabaseManager.querySingleTable(ctx, "Collection",
+                "SELECT COUNT(*) AS count FROM Collection");
+        return null == row ? 0 : row.getLongColumn("count");
     }
 
     /**

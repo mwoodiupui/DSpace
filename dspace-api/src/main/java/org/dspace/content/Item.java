@@ -71,10 +71,10 @@ public class Item extends DSpaceObject
     private static final Logger log = Logger.getLogger(Item.class);
 
     /** Our context */
-    private Context ourContext;
+    private final Context ourContext;
 
     /** The table row corresponding to this item */
-    private TableRow itemRow;
+    private final TableRow itemRow;
 
     /** The e-person who submitted this item */
     private EPerson submitter;
@@ -122,6 +122,21 @@ public class Item extends DSpaceObject
 
         // Cache ourselves
         context.cache(this, row.getIntColumn("item_id"));
+    }
+
+    /**
+     * Count all items.
+     *
+     * @param ctx
+     * @return number of items.
+     * @throws SQLException if a database error occurs.
+     */
+    public static long count(Context ctx)
+            throws SQLException
+    {
+        TableRow row = DatabaseManager.querySingleTable(ctx, "Item",
+                "SELECT COUNT(*) AS count FROM Item");
+        return null == row ? 0 : row.getLongColumn("count");
     }
 
     private TableRowIterator retrieveMetadata() throws SQLException
@@ -225,7 +240,7 @@ public class Item extends DSpaceObject
 
         return new ItemIterator(context, rows);
     }
-    
+
     /**
      * Get all "final" items in the archive, both archived ("in archive" flag) or
      * withdrawn items are included. The order of the list is indeterminate.
@@ -546,7 +561,7 @@ public class Item extends DSpaceObject
 
         return valueArray;
     }
-    
+
     /**
      * Retrieve metadata field values from a given metadata string
      * of the form <schema prefix>.<element>[.<qualifier>|.*]
@@ -558,7 +573,7 @@ public class Item extends DSpaceObject
     public DCValue[] getMetadata(String mdString)
     {
         StringTokenizer dcf = new StringTokenizer(mdString, ".");
-        
+
         String[] tokens = { "", "", "" };
         int i = 0;
         while(dcf.hasMoreTokens())
@@ -569,7 +584,7 @@ public class Item extends DSpaceObject
         String schema = tokens[0];
         String element = tokens[1];
         String qualifier = tokens[2];
-        
+
         DCValue[] values;
         if ("*".equals(qualifier))
         {
@@ -583,7 +598,7 @@ public class Item extends DSpaceObject
         {
             values = getMetadata(schema, element, qualifier, Item.ANY);
         }
-        
+
         return values;
     }
 
@@ -633,7 +648,7 @@ public class Item extends DSpaceObject
     {
         addMetadata(MetadataSchema.DC_SCHEMA, element, qualifier, lang, value);
     }
-    
+
     /**
      * Add metadata fields. These are appended to existing values.
      * Use <code>clearDC</code> to remove values. The ordering of values
@@ -707,7 +722,7 @@ public class Item extends DSpaceObject
             String[] values, String authorities[], int confidences[])
     {
         List<DCValue> dublinCore = getMetadata();
-        MetadataAuthorityManager mam = MetadataAuthorityManager.getManager();        
+        MetadataAuthorityManager mam = MetadataAuthorityManager.getManager();
         boolean authorityControlled = mam.isAuthorityControlled(schema, element, qualifier);
         boolean authorityRequired = mam.isAuthorityRequired(schema, element, qualifier);
         String fieldName = schema+"."+element+((qualifier==null)? "": "."+qualifier);
@@ -1200,7 +1215,7 @@ public class Item extends DSpaceObject
                 }
             }
         }
-        
+
         Bundle[] bundleArray = new Bundle[bundles.size()];
         bundleArray = (Bundle[]) bundles.toArray(bundleArray);
 
@@ -1328,7 +1343,7 @@ public class Item extends DSpaceObject
 
         // Remove from internal list of bundles
         Bundle[] bunds = getBundles();
-        
+
         for (int i = 0; i < bunds.length; i++)
         {
             if (b.getID() == bunds[i].getID())
@@ -1943,7 +1958,7 @@ public class Item extends DSpaceObject
         {
             prov.append(colls[i].getMetadata("name")).append(" (ID: ").append(colls[i].getID()).append(")\n");
         }
-        
+
         // Clear withdrawn flag
         itemRow.setColumn("withdrawn", false);
 
@@ -2039,10 +2054,10 @@ public class Item extends DSpaceObject
 
         // remove all of our authorization policies
         AuthorizeManager.removeAllPolicies(ourContext, this);
-        
+
         // Remove any Handle
         HandleManager.unbindHandle(ourContext, this);
-        
+
         // remove version attached to the item
         removeVersion();
 
@@ -2050,7 +2065,7 @@ public class Item extends DSpaceObject
         // Finally remove item row
         DatabaseManager.delete(ourContext, itemRow);
     }
-    
+
     private void removeVersion() throws AuthorizeException, SQLException
     {
         VersioningService versioningService = new DSpace().getSingletonService(VersioningService.class);
@@ -2377,7 +2392,7 @@ public class Item extends DSpaceObject
         {
             AuthorizeManager.authorizeAction(ourContext, this, Constants.WRITE);
         }
-        
+
         // Move the Item from one Collection to the other
         to.addItem(this);
         from.removeItem(this);
@@ -2413,11 +2428,11 @@ public class Item extends DSpaceObject
 
             // Note that updating the owning collection above will have the same effect,
             // so we only do this here if the owning collection hasn't changed.
-            
+
             ourContext.addEvent(new Event(Event.MODIFY, Constants.ITEM, getID(), null));
         }
     }
-    
+
     /**
      * Check the bundle ORIGINAL to see if there are any uploaded files
      *
@@ -2445,7 +2460,7 @@ public class Item extends DSpaceObject
         }
         return true;
     }
-    
+
     /**
      * Get the collections this item is not in.
      *
@@ -2462,13 +2477,13 @@ public class Item extends DSpaceObject
         {
                 return notLinkedCollections;
         }
-        
+
         int i = 0;
-                 
+
         for (Collection collection : allCollections)
         {
                  boolean alreadyLinked = false;
-                         
+
                  for (Collection linkedCommunity : linkedCollections)
                  {
                          if (collection.getID() == linkedCommunity.getID())
@@ -2477,13 +2492,13 @@ public class Item extends DSpaceObject
                                  break;
                          }
                  }
-                         
+
                  if (!alreadyLinked)
                  {
                          notLinkedCollections[i++] = collection;
                  }
         }
-        
+
         return notLinkedCollections;
     }
 
@@ -2516,13 +2531,13 @@ public class Item extends DSpaceObject
 
         return false;
     }
-    
+
     public String getName()
     {
         DCValue t[] = getMetadata("dc", "title", null, Item.ANY);
         return (t.length >= 1) ? t[0].value : null;
     }
-        
+
     /**
      * Returns an iterator of Items possessing the passed metadata field, or only
      * those matching the passed value, if value is not Item.ANY
@@ -2551,7 +2566,7 @@ public class Item extends DSpaceObject
             throw new IllegalArgumentException(
                     "No such metadata field: schema=" + schema + ", element=" + element + ", qualifier=" + qualifier);
         }
-        
+
         String query = "SELECT item.* FROM metadatavalue,item WHERE item.in_archive='1' "+
                        "AND item.item_id = metadatavalue.item_id AND metadata_field_id = ?";
         TableRowIterator rows = null;
@@ -2566,7 +2581,7 @@ public class Item extends DSpaceObject
         }
         return new ItemIterator(context, rows);
      }
-    
+
     public DSpaceObject getAdminObject(int action) throws SQLException
     {
         DSpaceObject adminObject = null;
@@ -2596,7 +2611,7 @@ public class Item extends DSpaceObject
                 }
             }
         }
-        
+
         switch (action)
         {
             case Constants.ADD:
@@ -2680,7 +2695,7 @@ public class Item extends DSpaceObject
             }
         return adminObject;
     }
-    
+
     public DSpaceObject getParentObject() throws SQLException
     {
         Collection ownCollection = getOwningCollection();

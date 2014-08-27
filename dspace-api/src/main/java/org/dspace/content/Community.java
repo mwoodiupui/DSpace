@@ -40,20 +40,20 @@ import java.util.MissingResourceException;
  * The community's metadata (name, introductory text etc.) is loaded into'
  * memory. Changes to this metadata are only reflected in the database after
  * <code>update</code> is called.
- * 
+ *
  * @author Robert Tansley
  * @version $Revision$
  */
 public class Community extends DSpaceObject
 {
     /** log4j category */
-    private static Logger log = Logger.getLogger(Community.class);
+    private static final Logger log = Logger.getLogger(Community.class);
 
     /** Our context */
-    private Context ourContext;
+    private final Context ourContext;
 
     /** The table row corresponding to this item */
-    private TableRow communityRow;
+    private final TableRow communityRow;
 
     /** The logo bitstream */
     private Bitstream logo;
@@ -78,7 +78,7 @@ public class Community extends DSpaceObject
 
     /**
      * Construct a community object from a database row.
-     * 
+     *
      * @param context
      *            the context this object exists in
      * @param row
@@ -115,13 +115,28 @@ public class Community extends DSpaceObject
     }
 
     /**
+     * Count all communities.
+     *
+     * @param ctx
+     * @return number of communities.
+     * @throws SQLException if a database error occurs.
+     */
+    public static long count(Context ctx)
+            throws SQLException
+    {
+        TableRow row = DatabaseManager.querySingleTable(ctx, "Community",
+                "SELECT COUNT(*) AS count FROM Community");
+        return null == row ? 0 : row.getLongColumn("count");
+    }
+
+    /**
      * Get a community from the database. Loads in the metadata
-     * 
+     *
      * @param context
      *            DSpace context object
      * @param id
      *            ID of the community
-     * 
+     *
      * @return the community, or null if the ID is invalid.
      */
     public static Community find(Context context, int id) throws SQLException
@@ -161,10 +176,10 @@ public class Community extends DSpaceObject
 
     /**
      * Create a new top-level community, with a new ID.
-     * 
+     *
      * @param context
      *            DSpace context object
-     * 
+     *
      * @return the newly created community
      */
     public static Community create(Community parent, Context context)
@@ -194,7 +209,7 @@ public class Community extends DSpaceObject
 
         TableRow row = DatabaseManager.create(context, "community");
         Community c = new Community(context, row);
-        
+
         try
         {
             c.handle = (handle == null) ?
@@ -250,10 +265,10 @@ public class Community extends DSpaceObject
     /**
      * Get a list of all communities in the system. These are alphabetically
      * sorted by community name.
-     * 
+     *
      * @param context
      *            DSpace context object
-     * 
+     *
      * @return the communities in the system
      */
     public static Community[] findAll(Context context) throws SQLException
@@ -302,10 +317,10 @@ public class Community extends DSpaceObject
      * Get a list of all top-level communities in the system. These are
      * alphabetically sorted by community name. A top-level community is one
      * without a parent community.
-     * 
+     *
      * @param context
      *            DSpace context object
-     * 
+     *
      * @return the top-level communities in the system
      */
     public static Community[] findAllTop(Context context) throws SQLException
@@ -355,7 +370,7 @@ public class Community extends DSpaceObject
 
     /**
      * Get the internal ID of this collection
-     * 
+     *
      * @return the internal identifier
      */
     public int getID()
@@ -381,12 +396,12 @@ public class Community extends DSpaceObject
 
     /**
      * Get the value of a metadata field
-     * 
+     *
      * @param field
      *            the name of the metadata field to get
-     * 
+     *
      * @return the value of the metadata field
-     * 
+     *
      * @exception IllegalArgumentException
      *                if the requested metadata field doesn't exist
      */
@@ -398,19 +413,19 @@ public class Community extends DSpaceObject
 
     /**
      * Set a metadata value
-     * 
+     *
      * @param field
      *            the name of the metadata field to get
      * @param value
      *            value to set the field to
-     * 
+     *
      * @exception IllegalArgumentException
      *                if the requested metadata field doesn't exist
      * @exception MissingResourceException
      */
     public void setMetadata(String field, String value)throws MissingResourceException
     {
-        if ((field.trim()).equals("name") 
+        if ((field.trim()).equals("name")
                 && (value == null || value.trim().equals("")))
         {
             try
@@ -422,9 +437,9 @@ public class Community extends DSpaceObject
                 value = "Untitled";
             }
         }
-        
-        /* 
-         * Set metadata field to null if null 
+
+        /*
+         * Set metadata field to null if null
          * and trim strings to eliminate excess
          * whitespace.
          */
@@ -436,7 +451,7 @@ public class Community extends DSpaceObject
         {
             communityRow.setColumn(field, value.trim());
         }
-        
+
         modifiedMetadata = true;
         addDetails(field);
     }
@@ -449,7 +464,7 @@ public class Community extends DSpaceObject
     /**
      * Get the logo for the community. <code>null</code> is return if the
      * community does not have a logo.
-     * 
+     *
      * @return the logo of the community, or <code>null</code>
      */
     public Bitstream getLogo()
@@ -542,7 +557,7 @@ public class Community extends DSpaceObject
      * Create a default administrators group if one does not already exist.
      * Returns either the newly created group or the previously existing one.
      * Note that other groups may also be administrators.
-     * 
+     *
      * @return the default group of editors associated with this community
      * @throws SQLException
      * @throws AuthorizeException
@@ -558,24 +573,24 @@ public class Community extends DSpaceObject
             ourContext.turnOffAuthorisationSystem();
             admins = Group.create(ourContext);
             ourContext.restoreAuthSystemState();
-            
+
             admins.setName("COMMUNITY_" + getID() + "_ADMIN");
             admins.update();
         }
 
         AuthorizeManager.addPolicy(ourContext, this, Constants.ADMIN, admins);
-        
+
         // register this as the admin group
         communityRow.setColumn("admin", admins.getID());
-        
+
         modified = true;
         return admins;
     }
-    
+
     /**
-     * Remove the administrators group, if no group has already been created 
-     * then return without error. This will merely dereference the current 
-     * administrators group from the community so that it may be deleted 
+     * Remove the administrators group, if no group has already been created
+     * then return without error. This will merely dereference the current
+     * administrators group from the community so that it may be deleted
      * without violating database constraints.
      */
     public void removeAdministrators() throws SQLException, AuthorizeException
@@ -592,7 +607,7 @@ public class Community extends DSpaceObject
         // Remove the link to the community table.
         communityRow.setColumnNull("admin");
         admins = null;
-       
+
         modified = true;
     }
 
@@ -603,7 +618,7 @@ public class Community extends DSpaceObject
      * <P>
      * The default group of administrators for community 100 is the one called
      * <code>community_100_admin</code>.
-     * 
+     *
      * @return group of administrators, or <code>null</code> if there is no
      *         default group.
      */
@@ -615,7 +630,7 @@ public class Community extends DSpaceObject
     /**
      * Get the collections in this community. Throws an SQLException because
      * creating a community object won't load in all collections.
-     * 
+     *
      * @return array of Collection objects
      */
     public Collection[] getCollections() throws SQLException
@@ -671,7 +686,7 @@ public class Community extends DSpaceObject
      * Get the immediate sub-communities of this community. Throws an
      * SQLException because creating a community object won't load in all
      * collections.
-     * 
+     *
      * @return array of Community objects
      */
     public Community[] getSubcommunities() throws SQLException
@@ -682,10 +697,10 @@ public class Community extends DSpaceObject
         TableRowIterator tri = DatabaseManager.queryTable(
                 ourContext,"community",
                 "SELECT community.* FROM community, community2community WHERE " +
-                "community2community.child_comm_id=community.community_id " + 
+                "community2community.child_comm_id=community.community_id " +
                 "AND community2community.parent_comm_id= ? ORDER BY community.name",
                 getID());
-        
+
 
         // Make Community objects
         try
@@ -727,7 +742,7 @@ public class Community extends DSpaceObject
     /**
      * Return the parent community of this community, or null if the community
      * is top-level
-     * 
+     *
      * @return the immediate parent community, or null if top-level
      */
     public Community getParentCommunity() throws SQLException
@@ -741,7 +756,7 @@ public class Community extends DSpaceObject
                 "community2community.parent_comm_id=community.community_id " +
                 "AND community2community.child_comm_id= ? ",
                 getID());
-        
+
         // Make Community object
         try
         {
@@ -778,7 +793,7 @@ public class Community extends DSpaceObject
     /**
      * Return an array of parent communities of this community, in ascending
      * order. If community is top-level, return an empty array.
-     * 
+     *
      * @return an array of parent communities, empty if top-level
      */
     public Community[] getAllParents() throws SQLException
@@ -801,7 +816,7 @@ public class Community extends DSpaceObject
 
     /**
      * Return an array of collections of this community and its subcommunities
-     * 
+     *
      * @return an array of collections
      */
 
@@ -844,7 +859,7 @@ public class Community extends DSpaceObject
     /**
      * Create a new collection within this community. The collection is created
      * without any workflow groups or default submitter group.
-     * 
+     *
      * @return the new collection
      */
     public Collection createCollection() throws SQLException,
@@ -874,7 +889,7 @@ public class Community extends DSpaceObject
 
     /**
      * Add an exisiting collection to the community
-     * 
+     *
      * @param c
      *            collection to add
      */
@@ -920,7 +935,7 @@ public class Community extends DSpaceObject
 
     /**
      * Create a new sub-community within this community.
-     * 
+     *
      * @return the new community
      */
     public Community createSubcommunity() throws SQLException,
@@ -949,7 +964,7 @@ public class Community extends DSpaceObject
 
     /**
      * Add an exisiting community as a subcommunity to the community
-     * 
+     *
      * @param c
      *            subcommunity to add
      */
@@ -997,7 +1012,7 @@ public class Community extends DSpaceObject
      * Remove a collection. If it only belongs to one parent community,
      * then it is permanently deleted. If it has more than one parent community,
      * it is simply unmapped from the current community.
-     * 
+     *
      * @param c
      *            collection to remove
      * @throws SQLException
@@ -1036,11 +1051,11 @@ public class Community extends DSpaceObject
             {
                 c.delete();
             }
-        
+
             // log the removal & trigger any associated event(s)
             log.info(LogManager.getHeader(ourContext, "remove_collection",
                     "community_id=" + getID() + ",collection_id=" + removedId));
-        
+
             ourContext.addEvent(new Event(Event.REMOVE, Constants.COMMUNITY, getID(), Constants.COLLECTION, removedId, removedHandle));
         }
         catch(SQLException|IOException e)
@@ -1056,7 +1071,7 @@ public class Community extends DSpaceObject
      * Remove a subcommunity. If it only belongs to one parent community,
      * then it is permanently deleted. If it has more than one parent community,
      * it is simply unmapped from the current community.
-     * 
+     *
      * @param c
      *            subcommunity to remove
      * @throws SQLException
@@ -1075,7 +1090,7 @@ public class Community extends DSpaceObject
             // Capture ID & Handle of Community we are removing, so we can trigger events later
             int removedId = c.getID();
             String removedHandle = c.getHandle();
-        
+
             // How many parent(s) does this subcommunity have?
             TableRow trow = DatabaseManager.querySingle(ourContext,
                     "SELECT COUNT(DISTINCT parent_comm_id) AS num FROM community2community WHERE child_comm_id= ? ",
@@ -1114,7 +1129,7 @@ public class Community extends DSpaceObject
     /**
      * Delete the community, including the metadata and logo. Any children
      * (subcommunities or collections) are also deleted.
-     * 
+     *
      * @throws SQLException
      * @throws AuthorizeException
      * @throws IOException
@@ -1152,7 +1167,7 @@ public class Community extends DSpaceObject
             parent.removeSubcommunity(this);
         }
     }
-    
+
     /**
      * Internal method to remove the community and all its children from the
      * database, and perform any pre/post-cleanup
@@ -1225,10 +1240,10 @@ public class Community extends DSpaceObject
     /**
      * Return <code>true</code> if <code>other</code> is the same Community
      * as this object, <code>false</code> otherwise
-     * 
+     *
      * @param other
      *            object to compare to
-     * 
+     *
      * @return <code>true</code> if object passed in represents the same
      *         community as this object
      */
@@ -1250,7 +1265,7 @@ public class Community extends DSpaceObject
     /**
      * Utility method for reading in a group from a group ID in a column. If the
      * column is null, null is returned.
-     * 
+     *
      * @param col
      *            the column name to read
      * @return the group referred to by that column, or null
@@ -1276,7 +1291,7 @@ public class Community extends DSpaceObject
 
     /**
      * return TRUE if context's user can edit community, false otherwise
-     * 
+     *
      * @return boolean true = current user can edit community
      */
     public boolean canEditBoolean() throws java.sql.SQLException
@@ -1321,7 +1336,7 @@ public class Community extends DSpaceObject
      * @return  total items
      */
     public int countItems() throws SQLException
-    {       
+    {
     	int total = 0;
     	// add collection counts
         Collection[] cols = getCollections();
@@ -1337,7 +1352,7 @@ public class Community extends DSpaceObject
         }
         return total;
     }
-    
+
     public DSpaceObject getAdminObject(int action) throws SQLException
     {
         DSpaceObject adminObject = null;
@@ -1368,7 +1383,7 @@ public class Community extends DSpaceObject
         }
         return adminObject;
     }
-    
+
     public DSpaceObject getParentObject() throws SQLException
     {
         Community pCommunity = getParentCommunity();
@@ -1379,7 +1394,7 @@ public class Community extends DSpaceObject
         else
         {
             return null;
-        }       
+        }
     }
 
     @Override

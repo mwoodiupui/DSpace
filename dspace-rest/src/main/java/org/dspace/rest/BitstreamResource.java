@@ -7,6 +7,15 @@
  */
 package org.dspace.rest;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.AuthorizeManager;
@@ -16,15 +25,6 @@ import org.dspace.core.Constants;
 import org.dspace.rest.common.Bitstream;
 import org.dspace.usage.UsageEvent;
 import org.dspace.utils.DSpace;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.sql.SQLException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,9 +36,9 @@ import java.sql.SQLException;
 @Path("/bitstreams")
 public class BitstreamResource {
     Logger log = Logger.getLogger(BitstreamResource.class);
-    
+
     private static final boolean writeStatistics;
-	
+
 	static{
 		writeStatistics=ConfigurationManager.getBooleanProperty("rest","stats",false);
 	}
@@ -74,6 +74,70 @@ public class BitstreamResource {
         }
     }
 
+    /**
+     * Count our bitstreams.
+     *
+     * @return number of bitstreams.
+     */
+    @GET
+    @Path("/count")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Long getCount()
+    {
+        org.dspace.core.Context context;
+        long count;
+        try {
+            context = new org.dspace.core.Context();
+            count = org.dspace.content.Bitstream.count(context);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return count;
+    }
+
+    /**
+     * Sum sizes of matching bitstreams.
+     *
+     * @param unit omitted; or KB, MB, GB, TB, PB, EB, ZB, YB.
+     * @param mimeType omitted; or specific (text/plain); or general (image/*).
+     *                  Not a regular expression or a shell-style wildcard.
+     * @return
+     */
+    @GET
+    @Path("/total")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public BigDecimal getTotal(@QueryParam("unit") String unit,
+            @QueryParam("mimeType") String mimeType)
+    {
+        org.dspace.core.Context context;
+        BigDecimal total;
+        try {
+            context = new org.dspace.core.Context();
+            // TODO MIME type match
+            total = org.dspace.content.Bitstream.total(context);
+        } catch (SQLException ex) {
+            log.error(ex.getMessage());
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        // scale it
+        int scaleFactor;
+        switch (unit) {
+        case "KB": scaleFactor = 3; break;
+        case "MB": scaleFactor = 6; break;
+        case "GB": scaleFactor = 9; break;
+        case "TB": scaleFactor = 12; break;
+        case "PB": scaleFactor = 15; break;
+        case "EB": scaleFactor = 18; break;
+        case "ZB": scaleFactor = 21; break;
+        case "YB": scaleFactor = 24; break;
+        default: scaleFactor = 1;
+        }
+
+        return total.movePointLeft(scaleFactor);
+    }
+
     @GET
     @Path("/{bitstream_id}/retrieve")
     public javax.ws.rs.core.Response getFile(@PathParam("bitstream_id") final Integer bitstream_id,
@@ -88,7 +152,7 @@ public class BitstreamResource {
             	if(writeStatistics){
     				writeStats(context, bitstream_id, user_ip, user_agent, xforwarderfor, headers, request);
     			}
-            	
+
                 return Response.ok(bitstream.retrieve()).type(bitstream.getFormat().getMIMEType()).build();
             } else {
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -113,14 +177,14 @@ public class BitstreamResource {
             }
         }
     }
-    
+
 	private void writeStats(org.dspace.core.Context context, Integer bitstream_id, String user_ip, String user_agent,
 			String xforwarderfor, HttpHeaders headers,
 			HttpServletRequest request) {
-		
+
     	try{
     		DSpaceObject bitstream = DSpaceObject.find(context, Constants.BITSTREAM, bitstream_id);
-    		
+
     		if(user_ip==null || user_ip.length()==0){
     			new DSpace().getEventService().fireEvent(
 	                     new UsageEvent(
@@ -139,11 +203,11 @@ public class BitstreamResource {
 	                                     bitstream));
     		}
     		log.debug("fired event");
-    		
+
 		} catch(SQLException ex){
 			log.error("SQL exception can't write usageEvent \n" + ex);
 		}
-    		
+
 	}
 
 }
