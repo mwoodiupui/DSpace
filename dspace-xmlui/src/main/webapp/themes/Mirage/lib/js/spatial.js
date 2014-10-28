@@ -6,7 +6,7 @@
  * http://www.dspace.org/license/
  */
 // Set up Basemap
-var wms = new OpenLayers.Layer.WMS( "OpenStreetMaps WMS", "http://129.206.228.72/cached/osm", {layers: 'osm_auto:all'});
+var wms = new OpenLayers.Layer.WMS( "OpenStreetMaps WMS", wmsURL, {layers: 'osm_auto:all'});
 // Greece Bounding Box
 var initBound = OpenLayers.Bounds.fromArray([18.02,34.58,32.99,44.17]);
 // Map Object
@@ -18,7 +18,7 @@ var submit_control = new OpenLayers.Control();
 // Control for drawing Box on spatial search
 var search_control = new OpenLayers.Control();
 
-// Extend Submission Control 
+// Extend Submission Control
 OpenLayers.Util.extend(submit_control, {
        	draw: function () {
                	// this Handler.Box will intercept the shift-mousedown before Control.MouseDefault gets to see it
@@ -27,7 +27,7 @@ OpenLayers.Util.extend(submit_control, {
        },
 
        	notice: function (bounds) {
-		var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
+		var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
 		var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top));
 		var bound=OpenLayers.Bounds.fromArray([ll.lon,ll.lat,ur.lon,ur.lat]);
 		box.removeAllFeatures();
@@ -48,7 +48,7 @@ OpenLayers.Util.extend(search_control, {
        },
 
        	notice: function (bounds) {
-		var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
+		var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom));
 		var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top));
 		var bound=OpenLayers.Bounds.fromArray([ll.lon,ll.lat,ur.lon,ur.lat]);
 		box.removeAllFeatures();
@@ -66,7 +66,7 @@ function addMap(mapID, control){
 	// Load to map the proper control depending on it's purpose
 	if (control=='submit') {
 		map.addControl(submit_control);
-	} else if (control=='search') {	
+	} else if (control=='search') {
 		map.addControl(search_control);
 	} else {}
 	map.zoomToExtent(initBound);

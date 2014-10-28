@@ -126,24 +126,26 @@
             <xsl:apply-templates select="dri:error" mode="compositeComponent"/>
              <!-- For location input type during submision!! Add Map functionality from spatial.js-->
 	    <xsl:if test="@rend='submit-location'">
-		<div  class="smallmap" style="width: 400px; height: 200px; margin-top:3px; border: 1px solid #ccc; display:block; clear:both;">
-		 	<xsl:attribute name="id">
-				<xsl:value-of select="@id"/>
-		 	</xsl:attribute>  
-        </div>
+		<div class="smallmap" style="width: 400px; height: 200px; margin-top:3px; border: 1px solid #ccc; display:block; clear:both;">
+                    <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:attribute>
+                </div>
 		<script defer="defer" type="text/javascript">
-			var mapID='<xsl:value-of select="@id"/>';
-			// Text Input's id
-			var fieldID=mapID.replace(/\./g,'_');
-			addMap(mapID,'submit');
+                    var mapID='<xsl:value-of select="@id"/>';
+                    // Web Map Service URL
+                    var wmsURL='<xsl:value-of select="confman:getProperty(\'spatial\', \'wms.url\')"/>';
+                    // Text Input's id
+                    var fieldID=mapID.replace(/\./g,'_');
+                    addMap(mapID,'submit');
 
-			// if item's Bounding Box add it to Map
-			if (document.getElementById (fieldID + '_west').value!=""){
-				addItemsBoxToMap(document.getElementById (fieldID + '_west').value,document.getElementById (fieldID + '_south').value,document.getElementById (fieldID + '_east').value,document.getElementById (fieldID + '_north').value);
-			}
+                    // if item's Bounding Box add it to Map
+                    if (document.getElementById (fieldID + '_west').value!=""){
+                        addItemsBoxToMap(document.getElementById (fieldID + '_west').value,document.getElementById (fieldID + '_south').value,document.getElementById (fieldID + '_east').value,document.getElementById (fieldID + '_north').value);
+                    }
 		</script>
 		<p><i18n:text>xmlui.Spatial.Map.Tip</i18n:text></p>
- 	  </xsl:if> <!--End map rendering-->
+            </xsl:if> <!--End map rendering-->
         </div>
     </xsl:template>
 
