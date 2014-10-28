@@ -9,7 +9,6 @@ package org.dspace.discovery;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
@@ -31,11 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -63,12 +60,8 @@ import org.apache.solr.common.util.NamedList;
 import org.apache.solr.handler.extraction.ExtractingParams;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
+import org.dspace.content.*;
 import org.dspace.content.Collection;
-import org.dspace.content.Community;
-import org.dspace.content.DCValue;
-import org.dspace.content.DSpaceObject;
-import org.dspace.content.Item;
-import org.dspace.content.ItemIterator;
 import org.dspace.content.authority.ChoiceAuthorityManager;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.authority.MetadataAuthorityManager;
@@ -152,7 +145,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     SolrQuery solrQuery = new SolrQuery()
                             .setQuery("search.resourcetype:2 AND search.resourceid:1");
 
-                    solr.query(solrQuery);                
+                    solr.query(solrQuery);
                 } catch (SolrServerException e) {
                     log.error("Error while initialinging solr server", e);
                 }
@@ -1089,6 +1082,16 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                                 value = DateFormatUtils.formatUTC(date, "yyyy-MM-dd");
                             }
                         }
+                         if(searchFilter.getType().equals(DiscoveryConfigurationParameters.TYPE_LOCATION))
+                        {
+                            //For our search filters that are spatial location we format them properly
+                             if(value != null)
+                            {
+                                DCBoundingBox dcbb=new DCBoundingBox(value);
+                                Double[] bbox=dcbb.toDouble();
+                                value=bbox[0] + " " + bbox[2] + " " + bbox[1] + " " + bbox[3];
+                            }
+                        }
                         doc.addField(searchFilter.getIndexFieldName(), value);
                         doc.addField(searchFilter.getIndexFieldName() + "_keyword", value);
 
@@ -1179,7 +1182,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 										// add the year to the autocomplete index
 										doc.addField(searchFilter.getIndexFieldName() + "_ac", yearUTC);
 										doc.addField(indexField, yearUTC);
-                                    	
+
                                     	if (yearUTC.startsWith("0"))
                                         {
         									doc.addField(
@@ -1200,7 +1203,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         													+ "_keyword",
         													value.replaceFirst("0*", ""));
                                         }
-                                    	
+
                                     	//Also save a sort value of this year, this is required for determining the upper & lower bound year of our facet
                                         if(doc.getField(indexField + "_sort") == null)
                                         {
@@ -1927,7 +1930,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             return null;
         }
         HttpHost hostURL = (HttpHost)(getSolr().getHttpClient().getParams().getParameter(ClientPNames.DEFAULT_HOST));
-        
+
         HttpGet method = new HttpGet(hostURL.toHostString() + "");
         try
         {
@@ -2038,6 +2041,14 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 	}
                 	filterQuery.append(value);
                 }
+            }
+            // Spatial search
+            else if("intersects".equals(operator) || "iswithin".equals(operator))
+            {
+                filterQuery.append('"').append(operator).append("(");
+                DCBoundingBox dcbb=new DCBoundingBox(value);
+                value=dcbb.getWest() + " " + dcbb.getSouth() + " " + dcbb.getEast()+ " " + dcbb.getNorth();
+                filterQuery.append(value).append(")").append('"');
             }
             else{
                 //DO NOT ESCAPE RANGE QUERIES !

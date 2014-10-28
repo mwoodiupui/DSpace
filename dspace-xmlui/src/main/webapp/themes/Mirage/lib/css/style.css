@@ -641,11 +641,11 @@ span.field-help {
     border: 1px solid #9CACBA;
 }
 
-#aspect_submission_Submissions_div_submissions table tr.ds-table-header-row, 
+#aspect_submission_Submissions_div_submissions table tr.ds-table-header-row,
 #aspect_submission_Submissions_div_submissions table tr.ds-table-header-row th {
     background-color: #B6C8D9;
     border: 1px solid #9CACBA;
-    
+
 }
 
 .submission .ds-form-sublist li.ds-form-item {
@@ -1398,7 +1398,6 @@ table.discovery-filters th.new-filter-header
     font-size: 100%;
 }
 
-
 /*Sherpa Colour Styles*/
 .sherpaList{
     list-style-type: none;
@@ -1465,4 +1464,15 @@ table.discovery-filters th.new-filter-header
 
 #impact-plumx {
     float:right;
+}
+
+div.spatial-advanced-search{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+	width:450px;
+}
+
+div.spatial-search-div{
+	display:none;
 }
