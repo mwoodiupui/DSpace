@@ -79,7 +79,7 @@ public class StatisticsClient
         }
         else if (line.hasOption('m'))
         {
-            SolrLogger.markRobotsByIP();
+            SolrLogger.markRobots();
         }
         else if(line.hasOption('f'))
         {

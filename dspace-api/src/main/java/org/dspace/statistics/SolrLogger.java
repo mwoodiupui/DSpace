@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.request.AbstractUpdateRequest;
@@ -34,7 +33,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.*;
-import org.apache.solr.common.util.JavaBinCodec;
 import org.dspace.content.*;
 import org.dspace.content.Collection;
 import org.dspace.core.ConfigurationManager;
@@ -60,7 +58,7 @@ import java.util.*;
  * Static holder for a HttpSolrClient connection pool to issue
  * usage logging events to Solr from DSpace libraries, and some static query
  * composers.
- * 
+ *
  * @author ben at atmire.com
  * @author kevinvandevelde at atmire.com
  * @author mdiggory at atmire.com
@@ -68,7 +66,7 @@ import java.util.*;
 public class SolrLogger
 {
     private static final Logger log = Logger.getLogger(SolrLogger.class);
-	
+
     private static final HttpSolrServer solr;
 
     public static final String DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -101,9 +99,9 @@ public class SolrLogger
         log.info("solr-statistics.spidersfile:" + ConfigurationManager.getProperty("solr-statistics", "spidersfile"));
         log.info("solr-statistics.server:" + ConfigurationManager.getProperty("solr-statistics", "server"));
         log.info("usage-statistics.dbfile:" + ConfigurationManager.getProperty("usage-statistics", "dbfile"));
-    	
+
         HttpSolrServer server = null;
-        
+
         if (ConfigurationManager.getProperty("solr-statistics", "server") != null)
         {
             try
@@ -240,7 +238,7 @@ public class SolrLogger
         	log.error(e.getMessage(), e);
         }
     }
-    
+
 	public static void postView(DSpaceObject dspaceObject,
 			String ip, String userAgent, String xforwardedfor, EPerson currentUser) {
 		if (solr == null || locationService == null) {
@@ -272,7 +270,7 @@ public class SolrLogger
 			log.error(e.getMessage(), e);
 		}
 	}
-    
+
 
     /**
      * Returns a solr input document containing common information about the statistics
@@ -461,7 +459,7 @@ public class SolrLogger
         return doc1;
     }
 
-    
+
     public static void postSearch(DSpaceObject resultObject, HttpServletRequest request, EPerson currentUser,
                                  List<String> queries, int rpp, String sortBy, String order, int page, DSpaceObject scope) {
         try
@@ -568,7 +566,7 @@ public class SolrLogger
      *  <li>Item log: owning colls/comms.</li>
      *  <li>Bitstream log: owning item/colls/comms.</li>
      * </ul>
-     * 
+     *
      * @param doc1
      *            the current SolrInputDocument
      * @param dso
@@ -635,7 +633,7 @@ public class SolrLogger
 
     /**
      * Delete data from the index, as described by a query.
-     * 
+     *
      * @param query description of the records to be deleted.
      * @throws IOException
      * @throws SolrServerException
@@ -691,7 +689,7 @@ public class SolrLogger
             }
             MapSolrParams solrParams = new MapSolrParams(params);
             QueryResponse response = solr.query(solrParams);
-            
+
             long numbFound = response.getResults().getNumFound();
 
             // process the first batch
@@ -762,6 +760,38 @@ public class SolrLogger
 
         }
 
+    }
+
+    /**
+     * Examine each case not already marked as a robot access, marking any that
+     * match a robot by any method.
+     */
+    public static void markRobots()
+    {
+        try {
+            ResultProcessor processor = new ResultProcessor(){
+                @Override
+                public void process(SolrDocument doc)
+                        throws IOException, SolrServerException
+                {
+                    if (SpiderDetector.isSpider(doc.getFieldValue("ip").toString(),
+                            doc.getFieldValue("proxyIps").toString(), // FIXME check name
+                            doc.getFieldValue("hostname").toString(), // FIXME check name
+                            doc.getFieldValue("agent").toString())) // FIXME check name
+                    {
+                        doc.removeFields("isBot");
+                        doc.addField("isBot", true);
+                        SolrInputDocument newInput = ClientUtils.toSolrInputDocument(doc);
+                        solr.add(newInput);
+                        log.info("Marked " + doc.getFieldValue("ip") + " as bot");
+                    }
+                }
+            };
+
+            processor.execute("-isBot:true");
+        } catch(SolrServerException | IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     public static void markRobotByUserAgent(String agent){
@@ -896,7 +926,7 @@ public class SolrLogger
 
     /**
      * Query used to get values grouped by the given facet field.
-     * 
+     *
      * @param query
      *            the query to be used
      * @param facetField
@@ -955,7 +985,7 @@ public class SolrLogger
 
     /**
      * Query used to get values grouped by the date.
-     * 
+     *
      * @param query
      *            the query to be used
      * @param max
@@ -1235,7 +1265,7 @@ public class SolrLogger
         return filterQuery;
 
     }
-    
+
     /**
      * Maintenance to keep a SOLR index efficient.
      * Note: This might take a long time.
