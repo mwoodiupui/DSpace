@@ -58,17 +58,17 @@ import org.springframework.beans.factory.annotation.Required;
  * fully-qualified names of all metadata fields to be looked up on a DSpace
  * object and their values set on mapped fully-qualified names in the object's
  * DataCite metadata.</li>
- * 
+ *
  * <li>A second map ("crosswalkTransform") provides Transform instances mapped
  * from EZID metadata field names. This allows the crosswalk to rewrite field
  * values where the form maintained by DSpace is not directly usable in EZID
  * metadata.</li>
- * 
+ *
  * <li>Optional: A boolean property ("generateDataciteXML") that controls the
  * creation and inclusion of DataCite xml schema during the metadata
  * crosswalking. The default "DataCite" dissemination plugin uses
  * DIM2DataCite.xsl for crosswalking. Default value: false.</li>
- * 
+ *
  * <li>Optional: A string property ("disseminationCrosswalkName") that can be
  * used to set the name of the dissemination crosswalk plugin for metadata
  * crosswalking. Default value: "DataCite".</li>
@@ -476,7 +476,7 @@ public class EZIDIdentifierProvider
 
     /**
      * Format a naked identifier as a DOI with our configured authority prefix.
-     * 
+     *
      * @throws IdentifierException if authority prefix is not configured.
      */
     String idToDOI(String id)
@@ -563,17 +563,16 @@ public class EZIDIdentifierProvider
      */
     Map<String, String> crosswalkMetadata(DSpaceObject dso)
     {
-        if ((null == dso) || !(dso instanceof Item))
+        if (null == dso)
         {
-            throw new IllegalArgumentException("Must be an Item");
+            throw new IllegalArgumentException("Null object reference");
         }
-        Item item = (Item) dso; // TODO generalize to DSO when all DSOs have metadata.
 
         Map<String, String> mapped = new HashMap<>();
 
         for (Entry<String, String> datum : crosswalk.entrySet())
         {
-            Metadatum[] values = item.getMetadataByMetadataString(datum.getValue());
+            Metadatum[] values = dso.getMetadataByMetadataString(datum.getValue());
             if (null != values)
             {
                 for (Metadatum value : values)
@@ -642,7 +641,7 @@ public class EZIDIdentifierProvider
         else
         {
             String url = configurationService.getProperty("dspace.url")
-                    + "/handle/" + item.getHandle();
+                    + "/handle/" + dso.getHandle();
             log.info("Supplying location:  {}", url);
             mapped.put("_target", url);
         }
