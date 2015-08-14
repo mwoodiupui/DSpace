@@ -8,7 +8,6 @@
 package org.dspace.identifier.ezid;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -17,13 +16,15 @@ import java.util.Map.Entry;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.dspace.identifier.DOI;
 import org.dspace.identifier.IdentifierException;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class EZIDRequest
 
     private static final String MD_KEY_STATUS = "_status";
 
-    private final AbstractHttpClient client;
+    private final CloseableHttpClient client;
 
     private final String scheme;
 
@@ -87,14 +88,17 @@ public class EZIDRequest
             this.authority = authority;
         }
 
-        client = new DefaultHttpClient();
+        HttpClientBuilder builder = HttpClientBuilder.create();
         if (null != username)
         {
             URI uri = new URI(scheme, host, path, null);
-            client.getCredentialsProvider().setCredentials(
+            CredentialsProvider credentialsProvider = new SystemDefaultCredentialsProvider();
+            credentialsProvider.setCredentials(
                     new AuthScope(uri.getHost(), uri.getPort()),
                     new UsernamePasswordCredentials(username, password));
+            builder.setDefaultCredentialsProvider(credentialsProvider);
         }
+        client = builder.build();
     }
 
     /**
@@ -128,19 +132,24 @@ public class EZIDRequest
             this.authority = authority;
         }
 
-        client = new DefaultHttpClient();
+        HttpClientBuilder builder = HttpClientBuilder.create();
         if (null != username)
         {
             URI uri = new URI(scheme, host, path, null);
-            client.getCredentialsProvider().setCredentials(
+            CredentialsProvider credentialsProvider = new SystemDefaultCredentialsProvider();
+            credentialsProvider.setCredentials(
                     new AuthScope(uri.getHost(), uri.getPort()),
                     new UsernamePasswordCredentials(username, password));
+            builder.setDefaultCredentialsProvider(credentialsProvider);
         }
+        client = builder.build();
     }
 
     /**
      * Fetch the metadata bound to an identifier.
      *
+     * @param name unique suffix to complete a DOI.
+     * @return EZID's response to the request.
      * @throws IdentifierException if the response is error or body malformed.
      * @throws IOException if the HTTP request fails.
      * @throws URISyntaxException
@@ -162,8 +171,15 @@ public class EZIDRequest
      * request path. Note: to "reserve" a given identifier, include "_status =
      * reserved" in {@link metadata}.
      *
+     * @param name unique suffix to complete a DOI.
      * @param metadata ANVL-encoded key/value pairs.
-     * @return
+     * @return EZID's response to the request.
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse create(String name, Map<String, String> metadata)
             throws IOException, IdentifierException, URISyntaxException
@@ -187,6 +203,12 @@ public class EZIDRequest
      *
      * @param metadata ANVL-encoded key/value pairs.
      * @return
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse mint(Map<String, String> metadata)
             throws IOException, IdentifierException, URISyntaxException
@@ -208,9 +230,16 @@ public class EZIDRequest
     /**
      * Alter the metadata bound to an identifier.
      *
-     * @param metadata fields to be altered. Leave the value of a field's empty
+     * @param name unique suffix to complete a DOI.
+     * @param metadata fields to be altered. Leave the value of a field empty
      *                 to delete the field.
      * @return
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse modify(String name, Map<String, String> metadata)
             throws IOException, IdentifierException, URISyntaxException
@@ -231,6 +260,14 @@ public class EZIDRequest
 
     /**
      * Destroy a reserved identifier. Fails if ID was ever public.
+     * @param name unique suffix to complete a DOI.
+     * @return
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse delete(String name)
             throws IOException, IdentifierException, URISyntaxException
@@ -246,11 +283,19 @@ public class EZIDRequest
 
     /**
      * Remove a public identifier from view.
+     * @param name unique suffix to complete a DOI.
+     * @return
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse withdraw(String name)
             throws IOException, IdentifierException, URISyntaxException
     {
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put(MD_KEY_STATUS, "unavailable");
         return modify(name, metadata);
     }
@@ -258,12 +303,20 @@ public class EZIDRequest
     /**
      * Remove a public identifier from view, with a reason.
      *
+     * @param name unique suffix to complete a DOI.
      * @param reason annotation for the item's unavailability.
+     * @return
+     * @throws java.io.IOException
+     *          if the connection to EZID is aborted.
+     * @throws org.dspace.identifier.IdentifierException
+     *          if EZID's response cannot be read or understood.
+     * @throws java.net.URISyntaxException
+     *          if the constructed URI would violate RFC 2396.
      */
     public EZIDResponse withdraw(String name, String reason)
             throws IOException, IdentifierException, URISyntaxException
     {
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put(MD_KEY_STATUS, "unavailable | " + escape(reason));
         return modify(name, metadata);
     }
