@@ -63,50 +63,6 @@ public class EZIDRequest
      *
      * @param scheme URL scheme for access to the EZID service.
      * @param host Host name for access to the EZID service.
-     * @param authority DOI authority prefix, e.g. "10.5072/FK2".
-     * @param username an EZID user identity.
-     * @param password user's password, or {@code null} for none.
-     * @throws URISyntaxException if host or authority is bad.
-     * @deprecated since 4.1
-     */
-    @Deprecated
-    EZIDRequest(String scheme, String host, String authority, String username, String password)
-            throws URISyntaxException
-    {
-        this.scheme = scheme;
-
-        this.host = host;
-
-        this.path = "ezid";
-
-        if (authority.charAt(authority.length()-1) == '/')
-        {
-            this.authority = authority.substring(0, authority.length()-1);
-        }
-        else
-        {
-            this.authority = authority;
-        }
-
-        HttpClientBuilder builder = HttpClientBuilder.create();
-        if (null != username)
-        {
-            URI uri = new URI(scheme, host, path, null);
-            CredentialsProvider credentialsProvider = new SystemDefaultCredentialsProvider();
-            credentialsProvider.setCredentials(
-                    new AuthScope(uri.getHost(), uri.getPort()),
-                    new UsernamePasswordCredentials(username, password));
-            builder.setDefaultCredentialsProvider(credentialsProvider);
-        }
-        client = builder.build();
-    }
-
-    /**
-     * Prepare a context for requests concerning a specific identifier or
-     * authority prefix.
-     *
-     * @param scheme URL scheme for access to the EZID service.
-     * @param host Host name for access to the EZID service.
      * @param path Local-path to the EZID service.
      * @param authority DOI authority prefix, e.g. "10.5072/FK2".
      * @param username an EZID user identity.
