@@ -12,23 +12,26 @@
 <head>
 <!--
   Author:   Peter Breton
-  Version:  $Revision$
-  Date:     $Date$
 -->
 </head>
 <body bgcolor="white">
 Provides classes and methods to interface with the
-<a href="http://www.handle.net" target=_new>CNRI Handle System</a>.
-The <a href="HandleManager.html">HandleManager</a> class acts as the
-main entry point.
-The <a href="HandlePlugin.html">HandlePlugin</a> class is intended to be
-loaded into the CNRI Handle Server. It acts as an adapter, translating
-Handle Server API calls into DSpace ones.
+<a href="http://www.handle.net" target='_blank'>CNRI Handle System</a>.
+<p>
+    The <a href="HandleManager.html">HandleManager</a> class acts as the
+    main entry point.
+</p>
+<p>
+    The <a href="HandlePlugin.html">HandlePlugin</a> class is intended to be
+    loaded into the CNRI Handle Server. It acts as an adapter, translating
+    Handle Server API calls into DSpace ones.
+</p>
 
 <h2>Using the Handle API</h2>
 
 <p>
-An example use of the Handle API is shown below:
+    An example use of the Handle API is shown below:
+</p>
 <pre>
     Item item;
 
@@ -47,13 +50,14 @@ An example use of the Handle API is shown below:
     // From the object, find its handle
     String rhandle = HandleManager.findHandle(context, resolvedItem);
 </pre>
-</p>
 
 <h2>Using the HandlePlugin with CNRI Handle Server</h2>
 
-In the CNRI Handle Server configuration file, set storage_type to
-<em>CUSTOM</em> and storage_class to
-<em>org.dspace.handle.HandlePlugin</em>.
+<p>
+    In the CNRI Handle Server configuration file, set {@code storage_type} to
+    {@code CUSTOM} and {@code storage_class} to
+    {@link org.dspace.handle.HandlePlugin}.
+</p>
 
 <!-- FIXME: Can we get a sample config file? -->
 
