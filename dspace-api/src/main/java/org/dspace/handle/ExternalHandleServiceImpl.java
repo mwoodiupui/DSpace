@@ -12,8 +12,6 @@ import net.handle.hdllib.HandleValue;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.handle.service.HandleService;
-import org.dspace.utils.DSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,28 +33,6 @@ public class ExternalHandleServiceImpl
 
     /** The DSpace URL mapped to this Handle. */
     private static final int URL_INDEX = 1;
-
-    @Override
-    public String resolveToURL(Context context, String handle)
-            throws SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String resolveUrlToHandle(Context context, String url)
-            throws SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    /*
-    @Override
-    public String getCanonicalForm(String handle)
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    */
 
     @Override
     public String createHandle(Context context, DSpaceObject dso)
@@ -97,77 +73,42 @@ public class ExternalHandleServiceImpl
         return handleName;
     }
 
-    /*
-    @Override
-    public String createHandle(Context context, DSpaceObject dso,
-            String suppliedHandle) throws SQLException, IllegalStateException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    */
-
     @Override
     public String createHandle(Context context, DSpaceObject dso,
             String suppliedHandle, boolean force)
             throws SQLException, IllegalStateException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //TODO
     }
 
     @Override
     public void unbindHandle(Context context, DSpaceObject dso)
             throws SQLException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        // TODO remove the handle from the dso
 
-    @Override
-    public DSpaceObject resolveToObject(Context context, String handle)
-            throws IllegalStateException, SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        HSAdapter hsAdapter = HSAdapterFactory.newInstance();
+        String handle = dso.getHandle();
+        if (null == handle)
+        {
+            log.info("Cannot unbind Handle of {} {} because it has none.",
+                    Constants.typeText[dso.getType()], dso.getID().toString());
+            return;
+        }
 
-    /*
-    @Override
-    public String findHandle(Context context, DSpaceObject dso)
-            throws SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            hsAdapter.deleteHandle(handle);
+        } catch (HandleException ex) {
+            log.error("Unable to unbind Handle {}:  {}", handle, ex.getMessage());
+        }
     }
-    */
-
-    /*
-    @Override
-    public List<String> getHandlesForPrefix(Context context, String prefix)
-            throws SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    */
-
-    /*
-    @Override
-    public String getPrefix()
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    */
-
-    /*
-    @Override
-    public long countHandlesByPrefix(Context context, String prefix) throws SQLException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    */
 
     @Override
     public int updateHandlesWithNewPrefix(Context context, String newPrefix,
             String oldPrefix)
             throws SQLException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //TODO
     }
 
     @Override
@@ -175,6 +116,6 @@ public class ExternalHandleServiceImpl
             DSpaceObject newOwner)
             throws SQLException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //TODO
     }
 }
