@@ -85,8 +85,7 @@ public class ExternalHandleServiceImpl
     public void unbindHandle(Context context, DSpaceObject dso)
             throws SQLException
     {
-        // TODO remove the handle from the dso
-
+        // Remove the handle from the external service.
         HSAdapter hsAdapter = HSAdapterFactory.newInstance();
         String handle = dso.getHandle();
         if (null == handle)
@@ -101,6 +100,9 @@ public class ExternalHandleServiceImpl
         } catch (HandleException ex) {
             log.error("Unable to unbind Handle {}:  {}", handle, ex.getMessage());
         }
+
+        // Remove the handle from the dso.
+        super.unbindHandle(context, dso);
     }
 
     @Override
