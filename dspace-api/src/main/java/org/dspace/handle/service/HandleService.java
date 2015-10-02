@@ -24,7 +24,6 @@ import java.util.List;
  * </p>
  *
  * @author Peter Breton
- * @version $Revision$
  */
 public interface HandleService {
 
@@ -93,6 +92,7 @@ public interface HandleService {
      * @param suppliedHandle
      *            existing handle value
      * @return the Handle
+     * @throws java.sql.SQLException
      * @throws IllegalStateException if specified handle is already in use by another object
      */
     public String createHandle(Context context, DSpaceObject dso, String suppliedHandle)
@@ -108,7 +108,9 @@ public interface HandleService {
      *            DSpaceObject
      * @param suppliedHandle
      *            existing handle value
+     * @param force
      * @return the Handle
+     * @throws java.sql.SQLException
      * @throws IllegalStateException if specified handle is already in use by another object
      */
     public String createHandle(Context context, DSpaceObject dso, String suppliedHandle, boolean force)
@@ -121,6 +123,7 @@ public interface HandleService {
      *
      * @param context DSpace context
      * @param dso DSpaceObject whose Handle to unbind.
+     * @throws java.sql.SQLException
      */
     public void unbindHandle(Context context, DSpaceObject dso)
             throws SQLException;
@@ -183,5 +186,13 @@ public interface HandleService {
 
     public int updateHandlesWithNewPrefix(Context context, String newPrefix, String oldPrefix) throws SQLException;
 
+    /**
+     * Transfer a Handle to a different DSpaceObject.
+     *
+     * @param context
+     * @param handle
+     * @param newOwner
+     * @throws SQLException
+     */
     public void modifyHandleDSpaceObject(Context context, String handle, DSpaceObject newOwner) throws SQLException;
 }
