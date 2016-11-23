@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.duraspace.org/dspace/schema"
+           elementFormDefault="qualified">
+
+    <xs:element name="dublin_core">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='dcvalue' minOccurs='1'>
+                    <xs:complexType>
+                        <xs:attribute name='element' type='xs:Name' use='required'/>
+                        <xs:attribute name='qualifier' type='xs:Name'/>
+                        <xs:attribute name='language' type='xs:Language'/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
