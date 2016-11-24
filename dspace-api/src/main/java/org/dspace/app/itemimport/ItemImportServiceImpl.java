@@ -35,7 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import org.apache.xpath.XPathAPI;
 import org.dspace.app.itemimport.service.ItemImportService;
 import org.dspace.app.util.LocalSchemaFilenameFilter;
@@ -57,8 +56,11 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.handle.service.HandleService;
+import org.dspace.services.ConfigurationService;
 import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
@@ -86,7 +88,7 @@ import org.xml.sax.SAXException;
  */
 public class ItemImportServiceImpl implements ItemImportService, InitializingBean
 {
-    private final Logger log = Logger.getLogger(ItemImportServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(ItemImportServiceImpl.class);
 
     @Autowired(required = true)
     protected AuthorizeService authorizeService;
@@ -98,6 +100,8 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
     protected BundleService bundleService;
     @Autowired(required = true)
     protected CollectionService collectionService;
+    @Autowired(required = true)
+    protected ConfigurationService configurationService;
     @Autowired(required = true)
     protected EPersonService ePersonService;
     @Autowired(required = true)
@@ -119,7 +123,9 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
     @Autowired(required = true)
     protected WorkflowService workflowService;
 
-    protected final String tempWorkDir = ConfigurationManager.getProperty("org.dspace.app.batchitemimport.work.dir");
+    private static final String WORK_DIR = "org.dspace.app.batchitemimport.work.dir";
+
+    protected String tempWorkDir;
 
     protected boolean isTest = false;
     protected boolean isResume = false;
@@ -129,14 +135,16 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        tempWorkDir = configurationService.getProperty(WORK_DIR);
+
         //Ensure tempWorkDir exists
         File tempWorkDirFile = new File(tempWorkDir);
         if (!tempWorkDirFile.exists()){
             boolean success = tempWorkDirFile.mkdir();
             if (success) {
-                log.info("Created org.dspace.app.batchitemimport.work.dir of: " + tempWorkDir);
+                log.info("Created {} of: {}", WORK_DIR, tempWorkDir);
             } else {
-                log.error("Cannot create batch import directory! " + tempWorkDir);
+                log.error("Cannot create batch import directory! {}", tempWorkDir);
             }
         }
     }
@@ -181,7 +189,7 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
     	//Determine the folder where BTE will output the results
     	String outputFolder = null;
     	if (workingDir == null){ //This indicates a command line import, create a random path
-    		File importDir = new File(ConfigurationManager.getProperty("org.dspace.app.batchitemimport.work.dir"));
+    		File importDir = new File(tempWorkDir);
             if (!importDir.exists()){
             	boolean success = importDir.mkdir();
             	if (!success) {
@@ -250,11 +258,14 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
     }
 
     @Override
-    public void addItemsAtomic(Context c, List<Collection> mycollections, String sourceDir, String mapFile, boolean template) throws Exception {
+    public void addItemsAtomic(Context c, List<Collection> mycollections,
+            String sourceDir, String mapFile, boolean template)
+            throws Exception
+    {
         try {
             addItems(c, mycollections, sourceDir, mapFile, template);
         } catch (Exception addException) {
-            log.error("AddItems encountered an error, will try to revert. Error: " + addException.getMessage());
+            log.error("AddItems encountered an error, will try to revert. Error: {}", addException.getMessage());
             deleteItems(c, mapFile);
             log.info("Attempted to delete partial (errored) import");
             throw addException;
@@ -273,9 +284,9 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
             // mode
 
             System.out.println("Adding items from directory: " + sourceDir);
-            log.debug("Adding items from directory: " + sourceDir);
+            log.debug("Adding items from directory: {}", sourceDir);
             System.out.println("Generating mapfile: " + mapFile);
-            log.debug("Generating mapfile: " + mapFile);
+            log.debug("Generating mapfile: {}", mapFile);
 
             boolean directoryFileCollections = false;
             if (mycollections == null)
@@ -1799,7 +1810,10 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
                         }
                     }
 
-					importDir = ConfigurationManager.getProperty("org.dspace.app.batchitemimport.work.dir") + File.separator + "batchuploads" + File.separator + context.getCurrentUser().getID() + File.separator + (isResume?theResumeDir:(new GregorianCalendar()).getTimeInMillis());
+					importDir = tempWorkDir + File.separator
+                            + "batchuploads" + File.separator
+                            + context.getCurrentUser().getID() + File.separator
+                            + (isResume?theResumeDir:(new GregorianCalendar()).getTimeInMillis());
 					File importDirFile = new File(importDir);
 					if (!importDirFile.exists()){
 						boolean success = importDirFile.mkdirs();
@@ -2006,11 +2020,11 @@ public class ItemImportServiceImpl implements ItemImportService, InitializingBea
     public String getImportUploadableDirectory(EPerson ePerson)
             throws Exception
     {
-        String uploadDir = ConfigurationManager.getProperty("org.dspace.app.batchitemimport.work.dir");
+        String uploadDir = tempWorkDir;
         if (uploadDir == null)
         {
             throw new Exception(
-                    "A dspace.cfg entry for 'org.dspace.app.batchitemimport.work.dir' does not exist.");
+                    "A dspace.cfg entry for '" + WORK_DIR + "' does not exist.");
         }
         String uploadDirBasePath = uploadDir + File.separator + "batchuploads" + File.separator;
         //Check for backwards compatibility with the old identifier
