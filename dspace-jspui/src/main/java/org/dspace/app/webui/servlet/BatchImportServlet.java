@@ -7,8 +7,10 @@
  */
 package org.dspace.app.webui.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -202,6 +204,7 @@ public class BatchImportServlet extends DSpaceServlet
     				return;
     			}
 
+                PrintStream messageStream = new PrintStream(new ByteArrayOutputStream()); // For discarding messages.
     			try {
     				String finalInputType = "saf";
     				String filePath = zipurl;
@@ -210,7 +213,8 @@ public class BatchImportServlet extends DSpaceServlet
         				filePath = f.getAbsolutePath();
     				}
     				
-    				itemImportService.processUIImport(filePath, owningCollection, reqCollections, uploadId, finalInputType, context, true);
+    				itemImportService.processUIImport(filePath, owningCollection,
+                            reqCollections, uploadId, finalInputType, context, true, messageStream);
     				
     				request.setAttribute("has-error", "false");
     				request.setAttribute("uploadId", null);

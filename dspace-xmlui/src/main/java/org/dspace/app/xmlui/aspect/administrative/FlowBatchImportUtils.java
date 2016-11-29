@@ -7,6 +7,7 @@
  */
 package org.dspace.app.xmlui.aspect.administrative;
 
+import java.io.ByteArrayOutputStream;
 import org.apache.cocoon.environment.Request;
 import org.apache.cocoon.servlet.multipart.Part;
 import org.apache.cocoon.servlet.multipart.PartOnDisk;
@@ -25,6 +26,7 @@ import org.dspace.handle.service.HandleService;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +82,7 @@ public class FlowBatchImportUtils {
     }
 
     public static FlowResult processUploadZIP(Context context, Request request) {
+        PrintStream messageStream = new PrintStream(new ByteArrayOutputStream()); // For discarding messages.
         try {
             FlowResult result = new FlowResult();
             result.setContinue(false);
@@ -175,7 +178,7 @@ public class FlowBatchImportUtils {
 
                 String sourceBatchDir = null;
                 try {
-                    sourceBatchDir = itemImportService.unzip(file);
+                    sourceBatchDir = itemImportService.unzip(file, messageStream);
                     log.debug("Unzipped to " + sourceBatchDir);
                 } catch (IOException e) {
                     log.error("BatchImportUI Unable to unzip", e);
@@ -187,7 +190,7 @@ public class FlowBatchImportUtils {
 
                 //TODO, Should we run this in TEST mode first, to ensure we get a clean pass?
                 try {
-                    itemImportService.addItemsAtomic(context, collections, sourceBatchDir, mapFile.getAbsolutePath(), true);
+                    itemImportService.addItemsAtomic(context, collections, sourceBatchDir, mapFile.getAbsolutePath(), true, messageStream);
                 } catch (Exception e) {
                     log.error("BatchImportUI - Failure during import: " + e.getMessage());
                     result.setContinue(false);
@@ -225,7 +228,7 @@ public class FlowBatchImportUtils {
 
             return result;
         }finally {
-            itemImportService.cleanupZipTemp();
+            itemImportService.cleanupZipTemp(messageStream);
         }
     }
 }

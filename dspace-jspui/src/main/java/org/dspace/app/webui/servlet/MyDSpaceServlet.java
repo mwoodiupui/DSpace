@@ -7,10 +7,12 @@
  */
 package org.dspace.app.webui.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -785,7 +787,8 @@ public class MyDSpaceServlet extends DSpaceServlet
     	}
     	else if (buttonPressed.equals("submit_delete")){
     		try {
-				itemImportService.deleteBatchUpload(context, uploadId);
+                PrintStream messageStream = new PrintStream(new ByteArrayOutputStream()); // For discarding messages.
+				itemImportService.deleteBatchUpload(context, uploadId, messageStream);
 				showMainPage(context, request, response);
 				
 			} catch (Exception e) {

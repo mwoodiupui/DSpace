@@ -365,27 +365,27 @@ public class ItemImportCLITool {
             try {
                 // If this is a zip archive, unzip it first
                 if (zip) {
-                    sourcedir = myloader.unzip(sourcedir, zipfilename);
+                    sourcedir = myloader.unzip(sourcedir, zipfilename, System.out);
                 }
 
 
                 c.turnOffAuthorisationSystem();
 
                 if ("add".equals(command)) {
-                    myloader.addItems(c, mycollections, sourcedir, mapfile, template);
+                    myloader.addItems(c, mycollections, sourcedir, mapfile, template, System.out);
                 } else if ("replace".equals(command)) {
-                    myloader.replaceItems(c, mycollections, sourcedir, mapfile, template);
+                    myloader.replaceItems(c, mycollections, sourcedir, mapfile, template, System.out);
                 } else if ("delete".equals(command)) {
-                    myloader.deleteItems(c, mapfile);
+                    myloader.deleteItems(c, mapfile, System.out);
                 } else if ("add-bte".equals(command)) {
-                    myloader.addBTEItems(c, mycollections, sourcedir, mapfile, template, bteInputType, null);
+                    myloader.addBTEItems(c, mycollections, sourcedir, mapfile, template, bteInputType, null, System.out);
                 }
 
                 // complete all transactions
                 c.complete();
             } catch (Exception e) {
                 c.abort();
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 System.out.println(e);
                 status = 1;
             }
@@ -395,7 +395,7 @@ public class ItemImportCLITool {
                 if (zip) {
                     System.gc();
                     System.out.println("Deleting temporary zip directory: " + myloader.getTempWorkDirFile().getAbsolutePath());
-                    myloader.cleanupZipTemp();
+                    myloader.cleanupZipTemp(System.out);
                 }
             } catch (Exception ex) {
                 System.out.println("Unable to delete temporary zip archive location: " + myloader.getTempWorkDirFile().getAbsolutePath());
