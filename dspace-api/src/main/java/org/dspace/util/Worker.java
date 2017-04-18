@@ -21,5 +21,10 @@ import java.util.Map;
  */
 public interface Worker
 {
+    /**
+     * Perform the work of this task.
+     *
+     * @param args named arguments for this invocation of the task.
+     */
     public void work(Map<String, String> args);
 }
