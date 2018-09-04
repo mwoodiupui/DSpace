@@ -27,6 +27,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.lang.StringUtils;
 import org.apache.xpath.XPathAPI;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
@@ -40,6 +41,8 @@ import org.dspace.content.service.CommunityService;
 import org.dspace.core.Context;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.handle.factory.HandleServiceFactory;
+import org.dspace.handle.service.HandleService;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -98,6 +101,8 @@ public class StructBuilder {
             = ContentServiceFactory.getInstance().getCollectionService();
     protected static final EPersonService ePersonService
             = EPersonServiceFactory.getInstance().getEPersonService();
+    protected static final HandleService handleService
+            = HandleServiceFactory.getInstance().getHandleService();
 
     /**
      * Default constructor
@@ -224,8 +229,13 @@ public class StructBuilder {
 
         // Check for 'identifier' attributes -- possibly output by this class.
         NodeList identifierNodes = XPathAPI.selectNodeList(document, "//*[@identifier]");
-        if (identifierNodes.getLength() > 0) {
-            System.err.println("The input document has 'identifier' attributes, which will be ignored.");
+        for (int i = 0; i < identifierNodes.getLength() ; i++) {
+            String identifier = identifierNodes.item(i).getAttributes().item(0).getTextContent();
+            if (handleService.resolveToURL(context, identifier) != null) {
+                System.err.printf("The input document contains handle %s, which is in use already. Aborting...\n",
+                        identifier);
+                System.exit(1);
+            }
         }
 
         // load the mappings into the member variable hashmaps
@@ -259,7 +269,7 @@ public class StructBuilder {
         // finally write the string into the output file.
         final org.jdom.Document xmlOutput = new org.jdom.Document(root);
         try {
-            new XMLOutputter().output(xmlOutput, output);
+            new XMLOutputter(Format.getPrettyFormat()).output(xmlOutput, output);
         } catch (IOException e) {
             System.out.printf("Unable to write to output file %s:  %s%n",
                     output, e.getMessage());
@@ -571,21 +581,30 @@ public class StructBuilder {
         Element[] elements = new Element[communities.getLength()];
 
         for (int i = 0; i < communities.getLength(); i++) {
+            Node tn = communities.item(i);
             Community community;
             Element element = new Element("community");
+            String identifier = tn.getAttributes().getNamedItem("identifier").getNodeValue();
 
             // create the community or sub community
             if (parent != null) {
-                community = communityService.create(parent, context);
+                if (StringUtils.isNotBlank(identifier)) {
+                    community = communityService.create(parent, context, identifier);
+                } else {
+                    community = communityService.create(parent, context);
+                }
             } else {
-                community = communityService.create(null, context);
+                if (StringUtils.isNotBlank(identifier)) {
+                    community = communityService.create(null, context, identifier);
+                } else {
+                    community = communityService.create(null, context);
+                }
             }
 
             // default the short description to be an empty string
             communityService.setMetadata(context, community, "short_description", " ");
 
             // now update the metadata
-            Node tn = communities.item(i);
             for (Map.Entry<String, String> entry : communityMap.entrySet()) {
                 NodeList nl = XPathAPI.selectNodeList(tn, entry.getKey());
                 if (nl.getLength() == 1) {
@@ -678,14 +697,21 @@ public class StructBuilder {
         Element[] elements = new Element[collections.getLength()];
 
         for (int i = 0; i < collections.getLength(); i++) {
+            Node tn = collections.item(i);
             Element element = new Element("collection");
-            Collection collection = collectionService.create(context, parent);
+            Collection collection;
+            String identifier = tn.getAttributes().getNamedItem("identifier").getNodeValue();
+
+            if (StringUtils.isNotBlank(identifier)) {
+                collection = collectionService.create(context, parent);
+            } else {
+                collection = collectionService.create(context, parent);
+            }
 
             // default the short description to the empty string
             collectionService.setMetadata(context, collection, "short_description", " ");
 
             // import the rest of the metadata
-            Node tn = collections.item(i);
             for (Map.Entry<String, String> entry : collectionMap.entrySet()) {
                 NodeList nl = XPathAPI.selectNodeList(tn, entry.getKey());
                 if (nl.getLength() == 1) {
