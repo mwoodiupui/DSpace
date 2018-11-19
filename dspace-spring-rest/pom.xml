@@ -293,6 +293,11 @@
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>4.23</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>${solr.version}</version>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency> <!-- Keep jmockit before junit -->
@@ -321,9 +326,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.dspace</groupId>
-            <artifactId>dspace-solr</artifactId>
-            <classifier>classes</classifier>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+	    <version>${solr.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
