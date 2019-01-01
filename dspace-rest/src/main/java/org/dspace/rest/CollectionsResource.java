@@ -45,7 +45,7 @@ import org.dspace.content.service.CollectionService;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.rest.common.Collection;
 import org.dspace.rest.common.Item;
 import org.dspace.rest.common.MetadataEntry;
@@ -375,8 +375,7 @@ public class CollectionsResource extends Resource {
                 log.trace("Starting workflow for item(id=" + dspaceItem.getID() + ").");
                 workflowService.start(context, workspaceItem);
             } catch (Exception e) {
-                log.error(
-                    LogManager.getHeader(context, "Error while starting workflow", "Item id: " + dspaceItem.getID()),
+                log.error(LogHelper.getHeader(context, "Error while starting workflow", "Item id: " + dspaceItem.getID()),
                     e);
                 throw new ContextException("Error while starting workflow for item(id=" + dspaceItem.getID() + ")", e);
             }

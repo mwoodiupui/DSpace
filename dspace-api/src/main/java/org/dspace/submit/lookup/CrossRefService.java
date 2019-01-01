@@ -38,7 +38,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.XMLUtils;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.jdom.JDOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -121,7 +121,7 @@ public class CrossRefService {
                                 .convertCrossRefDomToRecord(dataRoot);
                             results.add(crossitem);
                         } catch (Exception e) {
-                            log.warn(LogManager
+                            log.warn(LogHelper
                                          .getHeader(
                                              context,
                                              "retrieveRecordDOI",

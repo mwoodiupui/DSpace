@@ -44,7 +44,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
@@ -296,7 +296,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         throws AuthorizeException, IOException, SQLException, WorkflowException, WorkflowConfigurationException {
         WorkflowActionConfig firstActionConfig = firstStep.getUserSelectionMethod();
         firstActionConfig.getProcessingAction().activate(context, wfi);
-        log.info(LogManager.getHeader(context, "start_workflow",
+        log.info(LogHelper.getHeader(context, "start_workflow",
                                       firstActionConfig.getProcessingAction() + " workflow_item_id="
                                           + wfi.getID() + "item_id=" + wfi.getItem().getID() + "collection_id="
                                           + wfi.getCollection().getID()));
@@ -338,7 +338,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
                 throw new AuthorizeException("You are not allowed to to perform this task.");
             }
         } catch (WorkflowConfigurationException e) {
-            log.error(LogManager.getHeader(c, "error while executing state",
+            log.error(LogHelper.getHeader(c, "error while executing state",
                                            "workflow:  " + workflow.getID() + " action: " + currentActionConfig
                                                .getId() + " workflowItemId: " + workflowItemId), e);
             WorkflowUtils.sendAlert(request, e);
@@ -455,7 +455,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
 
         }
 
-        log.error(LogManager.getHeader(c, "Invalid step outcome", "Workflow item id: " + wfi.getID()));
+        log.error(LogHelper.getHeader(c, "Invalid step outcome", "Workflow item id: " + wfi.getID()));
         throw new WorkflowException("Invalid step outcome");
     }
 
@@ -504,7 +504,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             DSpaceServicesFactory.getInstance().getEventService().fireEvent(usageWorkflowEvent);
         } catch (SQLException e) {
             //Catch all errors we do not want our workflow to crash because the logging threw an exception
-            log.error(LogManager.getHeader(c, "Error while logging workflow event", "Workflow Item: " + wfi.getID()),
+            log.error(LogHelper.getHeader(c, "Error while logging workflow event", "Workflow Item: " + wfi.getID()),
                       e);
         }
     }
@@ -561,7 +561,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         // Remove (if any) the workflowItemroles for this item
         workflowItemRoleService.deleteForWorkflowItem(context, wfi);
 
-        log.info(LogManager.getHeader(context, "archive_item", "workflow_item_id="
+        log.info(LogHelper.getHeader(context, "archive_item", "workflow_item_id="
             + wfi.getID() + "item_id=" + item.getID() + "collection_id="
             + collection.getID()));
 
@@ -576,7 +576,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         itemService.update(context, item);
 
         // Log the event
-        log.info(LogManager.getHeader(context, "install_item", "workflow_item_id="
+        log.info(LogHelper.getHeader(context, "install_item", "workflow_item_id="
             + wfi.getID() + ", item_id=" + item.getID() + "handle=FIXME"));
 
         return item;
@@ -626,7 +626,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
                 email.send();
             }
         } catch (MessagingException e) {
-            log.warn(LogManager.getHeader(context, "notifyOfArchive",
+            log.warn(LogHelper.getHeader(context, "notifyOfArchive",
                     "cannot email user" + " item_id=" + item.getID()));
         }
     }
@@ -892,7 +892,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         xmlWorkflowItemService.deleteWrapper(context, wi);
         // Now delete the item
         itemService.delete(context, myitem);
-        log.info(LogManager.getHeader(context, "delete_workflow", "workflow_item_id="
+        log.info(LogHelper.getHeader(context, "delete_workflow", "workflow_item_id="
                 + workflowID + "item_id=" + itemID
                 + "collection_id=" + collID + "eperson_id="
                 + e.getID()));
@@ -950,7 +950,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         revokeReviewerPolicies(context, myitem);
         // notify that it's been rejected
         notifyOfReject(context, wi, e, rejection_message);
-        log.info(LogManager.getHeader(context, "reject_workflow", "workflow_item_id="
+        log.info(LogHelper.getHeader(context, "reject_workflow", "workflow_item_id="
             + wi.getID() + "item_id=" + wi.getItem().getID()
             + "collection_id=" + wi.getCollection().getID() + "eperson_id="
             + e.getID()));
@@ -974,7 +974,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         // convert into personal workspace
         WorkspaceItem wsi = returnToWorkspace(c, wi);
 
-        log.info(LogManager.getHeader(c, "abort_workflow", "workflow_item_id="
+        log.info(LogHelper.getHeader(c, "abort_workflow", "workflow_item_id="
             + wi.getID() + "item_id=" + wsi.getItem().getID()
             + "collection_id=" + wi.getCollection().getID() + "eperson_id="
             + e.getID()));
@@ -1025,7 +1025,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         workspaceItemService.update(c, workspaceItem);
 
         //myitem.update();
-        log.info(LogManager.getHeader(c, "return_to_workspace",
+        log.info(LogHelper.getHeader(c, "return_to_workspace",
                                       "workflow_item_id=" + wfi.getID() + "workspace_item_id="
                                           + workspaceItem.getID()));
 
@@ -1103,7 +1103,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             }
         } catch (IOException | MessagingException ex) {
             // log this email error
-            log.warn(LogManager.getHeader(c, "notify_of_reject",
+            log.warn(LogHelper.getHeader(c, "notify_of_reject",
                     "cannot email user" + " eperson_id" + e.getID()
                     + " eperson_email" + e.getEmail()
                     + " workflow_item_id" + wi.getID()));
