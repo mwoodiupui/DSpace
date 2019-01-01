@@ -18,7 +18,7 @@ import org.dspace.authenticate.AuthenticationMethod;
 import org.dspace.authenticate.factory.AuthenticateServiceFactory;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.utils.DSpace;
@@ -62,7 +62,7 @@ public class DSpaceAuthenticationProvider implements AuthenticationProvider {
                 .authenticateImplicit(context, null, null, null, httpServletRequest);
 
             if (implicitStatus == AuthenticationMethod.SUCCESS) {
-                log.info(LogManager.getHeader(context, "login", "type=implicit"));
+                log.info(LogHelper.getHeader(context, "login", "type=implicit"));
                 addSpecialGroupsToGrantedAuthorityList(context, httpServletRequest, grantedAuthorities);
                 return createAuthenticationToken(password, context, grantedAuthorities);
 
@@ -72,13 +72,13 @@ public class DSpaceAuthenticationProvider implements AuthenticationProvider {
                 if (AuthenticationMethod.SUCCESS == authenticateResult) {
                     addSpecialGroupsToGrantedAuthorityList(context, httpServletRequest, grantedAuthorities);
 
-                    log.info(LogManager
+                    log.info(LogHelper
                                  .getHeader(context, "login", "type=explicit"));
 
                     return createAuthenticationToken(password, context, grantedAuthorities);
 
                 } else {
-                    log.info(LogManager.getHeader(context, "failed_login", "email="
+                    log.info(LogHelper.getHeader(context, "failed_login", "email="
                         + name + ", result="
                         + authenticateResult));
                     throw new BadCredentialsException("Login failed");
@@ -117,8 +117,7 @@ public class DSpaceAuthenticationProvider implements AuthenticationProvider {
             return new UsernamePasswordAuthenticationToken(ePerson.getEmail(), password, grantedAuthorities);
 
         } else {
-            log.info(
-                LogManager.getHeader(context, "failed_login", "No eperson with an non-blank e-mail address found"));
+            log.info(LogHelper.getHeader(context, "failed_login", "No eperson with an non-blank e-mail address found"));
             throw new BadCredentialsException("Login failed");
         }
     }

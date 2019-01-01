@@ -29,7 +29,7 @@ import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.service.CollectionService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.curate.service.WorkflowCuratorService;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -142,7 +142,7 @@ public class WorkflowCuratorServiceImpl implements WorkflowCuratorService {
                 return true;
             }
         } else {
-            log.warn(LogManager.getHeader(c, "No workflow item found for id: " + wfId, null));
+            log.warn(LogHelper.getHeader(c, "No workflow item found for id: " + wfId, null));
         }
         return false;
     }

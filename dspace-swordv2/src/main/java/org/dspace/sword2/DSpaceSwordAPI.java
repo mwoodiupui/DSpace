@@ -41,7 +41,7 @@ import org.dspace.content.service.BundleService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.core.Utils;
 import org.swordapp.server.AuthCredentials;
 import org.swordapp.server.Deposit;
@@ -93,7 +93,7 @@ public class DSpaceSwordAPI {
         String obo = authCredentials.getOnBehalfOf() != null ?
             authCredentials.getOnBehalfOf() :
             "NONE";
-        log.info(LogManager.getHeader(sc.getContext(), "sword_auth_request",
+        log.info(LogHelper.getHeader(sc.getContext(), "sword_auth_request",
                                       "username=" + un + ",on_behalf_of=" + obo));
 
         return sc;

@@ -90,7 +90,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.discovery.configuration.DiscoveryConfiguration;
 import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
@@ -1818,7 +1818,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 if (dso != null) {
                     result.addDSpaceObject(dso);
                 } else {
-                    log.error(LogManager.getHeader(context, "Error while retrieving DSpace object from discovery index",
+                    log.error(LogHelper.getHeader(context, "Error while retrieving DSpace object from discovery index",
                                                    "Handle: " + doc.getFirstValue(HANDLE_FIELD)));
                     continue;
                 }
@@ -1999,7 +1999,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         } catch (Exception e) {
             // Any acception that we get ignore it.
             // We do NOT want any crashed to shown by the user
-            log.error(LogManager.getHeader(context, "Error while quering solr", "Queyr: " + query), e);
+            log.error(LogHelper.getHeader(context, "Error while quering solr", "Queyr: " + query), e);
             return new ArrayList<DSpaceObject>(0);
         }
     }
@@ -2102,8 +2102,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
 
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while retrieving related items", "Handle: " + item.getHandle()),
+            log.error(LogHelper.getHeader(context, "Error while retrieving related items", "Handle: " + item.getHandle()),
                 e);
         }
         return results;

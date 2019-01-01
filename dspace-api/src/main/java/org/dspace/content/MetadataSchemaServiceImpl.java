@@ -16,7 +16,7 @@ import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.dao.MetadataSchemaDAO;
 import org.dspace.content.service.MetadataSchemaService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -70,7 +70,7 @@ public class MetadataSchemaServiceImpl implements MetadataSchemaService {
         metadataSchema.setNamespace(namespace);
         metadataSchema.setName(name);
         metadataSchemaDAO.save(context, metadataSchema);
-        log.info(LogManager.getHeader(context, "create_metadata_schema",
+        log.info(LogHelper.getHeader(context, "create_metadata_schema",
                                       "metadata_schema_id="
                                           + metadataSchema.getID()));
         return metadataSchema;
@@ -102,7 +102,7 @@ public class MetadataSchemaServiceImpl implements MetadataSchemaService {
                                                      + " unique");
         }
         metadataSchemaDAO.save(context, metadataSchema);
-        log.info(LogManager.getHeader(context, "update_metadata_schema",
+        log.info(LogHelper.getHeader(context, "update_metadata_schema",
                                       "metadata_schema_id=" + metadataSchema.getID() + "namespace="
                                           + metadataSchema.getNamespace() + "name=" + metadataSchema.getName()));
     }
@@ -115,7 +115,7 @@ public class MetadataSchemaServiceImpl implements MetadataSchemaService {
                 "Only administrators may modify the metadata registry");
         }
 
-        log.info(LogManager.getHeader(context, "delete_metadata_schema",
+        log.info(LogHelper.getHeader(context, "delete_metadata_schema",
                                       "metadata_schema_id=" + metadataSchema.getID()));
 
         metadataSchemaDAO.delete(context, metadataSchema);

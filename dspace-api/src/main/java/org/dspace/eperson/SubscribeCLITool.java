@@ -38,7 +38,7 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.SubscribeService;
 import org.dspace.handle.factory.HandleServiceFactory;
@@ -256,8 +256,8 @@ public class SubscribeCLITool {
         if (emailText.length() > 0) {
 
             if (test) {
-                log.info(LogManager.getHeader(context, "subscription:", "eperson=" + eperson.getEmail()));
-                log.info(LogManager.getHeader(context, "subscription:", "text=" + emailText.toString()));
+                log.info(LogHelper.getHeader(context, "subscription:", "eperson=" + eperson.getEmail()));
+                log.info(LogHelper.getHeader(context, "subscription:", "text=" + emailText.toString()));
 
             } else {
 
@@ -266,7 +266,7 @@ public class SubscribeCLITool {
                 email.addArgument(emailText.toString());
                 email.send();
 
-                log.info(LogManager.getHeader(context, "sent_subscription", "eperson_id=" + eperson.getID()));
+                log.info(LogHelper.getHeader(context, "sent_subscription", "eperson_id=" + eperson.getID()));
 
             }
 

@@ -295,7 +295,7 @@ public class Context implements AutoCloseable {
         try {
             previousState = authStateChangeHistory.pop();
         } catch (EmptyStackException ex) {
-            log.warn(LogManager.getHeader(this, "restore_auth_sys_state",
+            log.warn(LogHelper.getHeader(this, "restore_auth_sys_state",
                                           "not previous state info available "
                                               + ex.getLocalizedMessage()));
             previousState = Boolean.FALSE;
@@ -310,7 +310,7 @@ public class Context implements AutoCloseable {
             // if previousCaller is not the current caller *only* log a warning
             if (!previousCaller.equals(caller)) {
                 log
-                    .warn(LogManager
+                    .warn(LogHelper
                               .getHeader(
                                   this,
                                   "restore_auth_sys_state",

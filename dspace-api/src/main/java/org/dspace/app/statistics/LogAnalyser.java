@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.SearchUtils;
@@ -1138,17 +1138,17 @@ public class LogAnalyser {
         if (match.matches()) {
             // set up a new log line object
             LogLine logLine = new LogLine(parseDate(match.group(1).trim()),
-                                          LogManager.unescapeLogField(match.group(2)).trim(),
-                                          LogManager.unescapeLogField(match.group(3)).trim(),
-                                          LogManager.unescapeLogField(match.group(4)).trim(),
-                                          LogManager.unescapeLogField(match.group(5)).trim());
+                                          LogHelper.unescapeLogField(match.group(2)).trim(),
+                                          LogHelper.unescapeLogField(match.group(3)).trim(),
+                                          LogHelper.unescapeLogField(match.group(4)).trim(),
+                                          LogHelper.unescapeLogField(match.group(5)).trim());
 
             return logLine;
         } else {
             match = validBase.matcher(line);
             if (match.matches()) {
                 LogLine logLine = new LogLine(parseDate(match.group(1).trim()),
-                                              LogManager.unescapeLogField(match.group(2)).trim(),
+                                              LogHelper.unescapeLogField(match.group(2)).trim(),
                                               null,
                                               null,
                                               null

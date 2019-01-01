@@ -18,7 +18,7 @@ import gr.ekt.bte.core.Record;
 import org.apache.http.HttpException;
 import org.apache.logging.log4j.Logger;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 
 /**
  * @author Andrea Bollini
@@ -64,7 +64,7 @@ public class PubmedOnlineDataLoader extends NetworkSubmissionLookupDataLoader {
                 try {
                     p = pubmedService.getByPubmedID(pmid);
                 } catch (Exception e) {
-                    log.error(LogManager.getHeader(context, "getByIdentifier",
+                    log.error(LogHelper.getHeader(context, "getByIdentifier",
                                                    "pmid=" + pmid), e);
                 }
                 if (p != null) {

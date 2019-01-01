@@ -25,7 +25,7 @@ import org.dspace.app.rest.parameter.SearchFilter;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.discovery.DiscoverFacetField;
 import org.dspace.discovery.DiscoverFilterQuery;
 import org.dspace.discovery.DiscoverHitHighlightingField;
@@ -155,7 +155,7 @@ public class DiscoverQueryBuilder implements InitializingBean {
                 queryArgs.addYearRangeFacet(facet, facetYearRange);
 
             } catch (Exception e) {
-                log.error(LogManager.getHeader(context, "Error in Discovery while setting up date facet range",
+                log.error(LogHelper.getHeader(context, "Error in Discovery while setting up date facet range",
                                                "date facet: " + facet), e);
             }
 

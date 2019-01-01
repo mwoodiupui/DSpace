@@ -23,7 +23,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.versioning.Version;
@@ -232,8 +232,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                 }
             }
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
             throw new RuntimeException("Error while attempting to create identifier for Item id: " + dso.getID(), e);
         }
     }
@@ -285,8 +284,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
         try {
             handleService.createHandle(context, dso, identifier);
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
             throw new RuntimeException("Error while attempting to create identifier for Item id: " + dso.getID());
         }
     }
@@ -319,8 +317,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
             }
             return handleId;
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
             throw new RuntimeException("Error while attempting to create identifier for Item id: " + dso.getID());
         }
     }
@@ -331,7 +328,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
         try {
             return handleService.resolveToObject(context, identifier);
         } catch (Exception e) {
-            log.error(LogManager.getHeader(context, "Error while resolving handle to item", "handle: " + identifier),
+            log.error(LogHelper.getHeader(context, "Error while resolving handle to item", "handle: " + identifier),
                       e);
         }
         return null;
@@ -379,8 +376,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                 }
             }
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to register doi", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to register doi", "Item id: " + dso.getID()), e);
             throw new IdentifierException("Error while moving doi identifier", e);
         }
 

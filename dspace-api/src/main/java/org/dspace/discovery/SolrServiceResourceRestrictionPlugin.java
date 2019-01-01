@@ -22,7 +22,7 @@ import org.dspace.content.service.CollectionService;
 import org.dspace.content.service.CommunityService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
@@ -74,7 +74,7 @@ public class SolrServiceResourceRestrictionPlugin implements SolrServiceIndexPlu
                 context.uncacheEntity(resourcePolicy);
             }
         } catch (SQLException e) {
-            log.error(LogManager.getHeader(context, "Error while indexing resource policies",
+            log.error(LogHelper.getHeader(context, "Error while indexing resource policies",
                                            "DSpace object: (id " + dso.getID() + " type " + dso.getType() + ")"));
         }
     }
@@ -117,7 +117,7 @@ public class SolrServiceResourceRestrictionPlugin implements SolrServiceIndexPlu
                 solrQuery.addFilterQuery(resourceQuery.toString());
             }
         } catch (SQLException e) {
-            log.error(LogManager.getHeader(context, "Error while adding resource policy information to query", ""), e);
+            log.error(LogHelper.getHeader(context, "Error while adding resource policy information to query", ""), e);
         }
     }
 }

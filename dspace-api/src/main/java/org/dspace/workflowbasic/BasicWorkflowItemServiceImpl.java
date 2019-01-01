@@ -18,7 +18,7 @@ import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.workflowbasic.dao.BasicWorkflowItemDAO;
 import org.dspace.workflowbasic.service.BasicWorkflowItemService;
@@ -72,12 +72,12 @@ public class BasicWorkflowItemServiceImpl implements BasicWorkflowItemService {
 
         if (workflowItem == null) {
             if (log.isDebugEnabled()) {
-                log.debug(LogManager.getHeader(context, "find_workflow_item",
+                log.debug(LogHelper.getHeader(context, "find_workflow_item",
                                                "not_found,workflow_id=" + id));
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug(LogManager.getHeader(context, "find_workflow_item",
+                log.debug(LogHelper.getHeader(context, "find_workflow_item",
                                                "workflow_id=" + id));
             }
         }
@@ -136,7 +136,7 @@ public class BasicWorkflowItemServiceImpl implements BasicWorkflowItemService {
     @Override
     public void update(Context context, BasicWorkflowItem workflowItem) throws SQLException, AuthorizeException {
         // FIXME check auth
-        log.info(LogManager.getHeader(context, "update_workflow_item",
+        log.info(LogHelper.getHeader(context, "update_workflow_item",
                                       "workflow_item_id=" + workflowItem.getID()));
 
 

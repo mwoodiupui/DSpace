@@ -25,7 +25,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.versioning.Version;
@@ -111,7 +111,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                 populateHandleMetadata(context, (Item) dso, id);
             }
         } catch (Exception e) {
-            log.error(LogManager.getHeader(context, "Error while attempting to create handle",
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle",
                                            "Item id: " + (dso != null ? dso.getID() : "")), e);
             throw new RuntimeException(
                 "Error while attempting to create identifier for Item id: " + (dso != null ? dso.getID() : ""));
@@ -262,8 +262,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         try {
             handleService.createHandle(context, dso, identifier);
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
             throw new RuntimeException("Error while attempting to create identifier for Item id: " + dso.getID());
         }
     }
@@ -296,8 +295,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
             }
             return handleId;
         } catch (Exception e) {
-            log.error(
-                LogManager.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
+            log.error(LogHelper.getHeader(context, "Error while attempting to create handle", "Item id: " + dso.getID()), e);
             throw new RuntimeException("Error while attempting to create identifier for Item id: " + dso.getID());
         }
     }
@@ -308,7 +306,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         try {
             return handleService.resolveToObject(context, identifier);
         } catch (Exception e) {
-            log.error(LogManager.getHeader(context, "Error while resolving handle to item", "handle: " + identifier),
+            log.error(LogHelper.getHeader(context, "Error while resolving handle to item", "handle: " + identifier),
                       e);
         }
         return null;

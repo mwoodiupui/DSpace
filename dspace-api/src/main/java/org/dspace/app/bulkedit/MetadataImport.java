@@ -45,7 +45,7 @@ import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.handle.factory.HandleServiceFactory;
@@ -417,7 +417,7 @@ public class MetadataImport {
             all += part + ",";
         }
         all = all.substring(0, all.length());
-        log.debug(LogManager.getHeader(c, "metadata_import",
+        log.debug(LogHelper.getHeader(c, "metadata_import",
                                        "item_id=" + item.getID() + ",fromCSV=" + all));
 
         // Don't compare collections  or actions
@@ -454,7 +454,7 @@ public class MetadataImport {
                 qualifier = qualifier.substring(0, qualifier.indexOf('['));
             }
         }
-        log.debug(LogManager.getHeader(c, "metadata_import",
+        log.debug(LogHelper.getHeader(c, "metadata_import",
                                        "item_id=" + item.getID() + ",fromCSV=" + all +
                                            ",looking_for_schema=" + schema +
                                            ",looking_for_element=" + element +
@@ -474,7 +474,7 @@ public class MetadataImport {
                         .getConfidence() : Choices.CF_ACCEPTED);
                 }
                 i++;
-                log.debug(LogManager.getHeader(c, "metadata_import",
+                log.debug(LogHelper.getHeader(c, "metadata_import",
                                                "item_id=" + item.getID() + ",fromCSV=" + all +
                                                    ",found=" + dcv.getValue()));
             }
@@ -525,7 +525,7 @@ public class MetadataImport {
             // column "dc.contributor.author" so don't remove it
             if ((value != null) && (!"".equals(value)) && (!contains(value, fromCSV)) && fromAuthority == null) {
                 // Remove it
-                log.debug(LogManager.getHeader(c, "metadata_import",
+                log.debug(LogHelper.getHeader(c, "metadata_import",
                                                "item_id=" + item.getID() + ",fromCSV=" + all +
                                                    ",removing_schema=" + schema +
                                                    ",removing_element=" + element +

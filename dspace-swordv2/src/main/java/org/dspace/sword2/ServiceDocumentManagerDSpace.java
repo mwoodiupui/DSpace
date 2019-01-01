@@ -17,7 +17,7 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CommunityService;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.swordapp.server.AuthCredentials;
 import org.swordapp.server.ServiceDocument;
 import org.swordapp.server.ServiceDocumentManager;
@@ -54,7 +54,7 @@ public class ServiceDocumentManagerDSpace implements ServiceDocumentManager {
             WorkflowManagerFactory.getInstance().retrieveServiceDoc(context);
 
             if (log.isDebugEnabled()) {
-                log.debug(LogManager
+                log.debug(LogHelper
                               .getHeader(context, "sword_do_service_document", ""));
             }
 
@@ -65,7 +65,7 @@ public class ServiceDocumentManagerDSpace implements ServiceDocumentManager {
             String obo = authCredentials.getOnBehalfOf() != null ?
                 authCredentials.getOnBehalfOf() :
                 "NONE";
-            log.info(LogManager
+            log.info(LogHelper
                          .getHeader(context, "sword_service_document_request",
                                     "username=" + un + ",on_behalf_of=" + obo));
 
