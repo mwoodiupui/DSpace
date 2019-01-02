@@ -15,12 +15,12 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.Constants;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.model.Event;
 import org.dspace.utils.DSpace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Serialize {@link UsageEvent} data to a file as Tab delimited. In dspace.cfg
@@ -38,8 +38,7 @@ public class TabFileUsageEventListener
     /**
      * log category.
      */
-    private static final Logger errorLog = LoggerFactory
-        .getLogger(TabFileUsageEventListener.class);
+    private static final Logger errorLog = LogManager.getLogger();
 
     /**
      * ISO 8601 Basic string format for record timestamps.

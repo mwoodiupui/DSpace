@@ -7,11 +7,11 @@
  */
 package org.dspace.servicemanager.spring;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.servicemanager.ServiceManagerSystem;
 import org.dspace.servicemanager.config.DSpaceConfigurationService;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 public final class DSpaceBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-    private static Logger log = LoggerFactory.getLogger(DSpaceBeanFactoryPostProcessor.class);
+    private static Logger log = LogManager.getLogger();
 
     private DSpaceConfigurationService configurationService;
     private ServiceManagerSystem parent;
@@ -45,7 +45,7 @@ public final class DSpaceBeanFactoryPostProcessor implements BeanFactoryPostProc
      * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(org
      * .springframework.beans.factory.config.ConfigurableListableBeanFactory)
      */
-
+    @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         // force config service to be registered first
         beanFactory.registerSingleton(ConfigurationService.class.getName(), configurationService);

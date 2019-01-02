@@ -19,11 +19,11 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.SelfNamedPlugin;
 import org.jdom.Namespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configurable XSLT-driven Crosswalk
@@ -89,7 +89,7 @@ public abstract class XSLTCrosswalk extends SelfNamedPlugin {
     /**
      * log4j category
      */
-    private static final Logger LOG = LoggerFactory.getLogger(XSLTCrosswalk.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * DSpace XML Namespace in JDOM form.

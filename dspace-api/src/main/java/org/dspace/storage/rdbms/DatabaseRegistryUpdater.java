@@ -10,6 +10,8 @@ package org.dspace.storage.rdbms;
 import java.io.File;
 import java.sql.Connection;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.administer.MetadataImporter;
 import org.dspace.administer.RegistryLoader;
 import org.dspace.core.Context;
@@ -19,8 +21,6 @@ import org.dspace.workflow.factory.WorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.XmlWorkflowService;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is a FlywayCallback class which automatically updates the
@@ -46,7 +46,7 @@ public class DatabaseRegistryUpdater implements FlywayCallback {
     /**
      * logging category
      */
-    private static final Logger log = LoggerFactory.getLogger(DatabaseRegistryUpdater.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * Method to actually update our registries from latest configs

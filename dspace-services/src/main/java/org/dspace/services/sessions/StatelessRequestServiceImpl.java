@@ -19,6 +19,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.mixins.InitializedService;
 import org.dspace.kernel.mixins.ShutdownService;
 import org.dspace.services.ConfigurationService;
@@ -29,11 +31,8 @@ import org.dspace.services.model.RequestInterceptor.RequestInterruptionException
 import org.dspace.services.sessions.model.HttpRequestImpl;
 import org.dspace.services.sessions.model.InternalRequestImpl;
 import org.dspace.utils.servicemanager.OrderedServiceComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-
 
 /**
  * Implementation of the session service.
@@ -47,7 +46,7 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public final class StatelessRequestServiceImpl implements RequestService, InitializedService, ShutdownService {
 
-    private static Logger log = LoggerFactory.getLogger(StatelessRequestServiceImpl.class);
+    private static Logger log = LogManager.getLogger();
 
     private ConfigurationService configurationService;
 

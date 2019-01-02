@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.servicemanager.config.DSpaceConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -32,7 +32,7 @@ import org.springframework.core.io.Resource;
  */
 public class ResourceFinder {
 
-    private static Logger log = LoggerFactory.getLogger(ResourceFinder.class);
+    private static Logger log = LogManager.getLogger();
 
     public static final String relativePath = DSpaceConfigurationService.DSPACE + "/";
     public static final String environmentPathVariable = DSpaceConfigurationService.DSPACE_HOME;

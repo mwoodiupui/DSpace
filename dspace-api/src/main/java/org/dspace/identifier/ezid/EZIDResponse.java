@@ -19,15 +19,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.identifier.IdentifierException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Decoded response data evoked by a request made to EZID.
  */
 public class EZIDResponse {
-    private static final Logger log = LoggerFactory.getLogger(EZIDResponse.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final String UTF_8 = "UTF-8";
 
@@ -35,7 +35,7 @@ public class EZIDResponse {
 
     private final String statusValue;
 
-    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final Map<String, String> attributes = new HashMap<>();
 
     private final HttpResponse response;
 
@@ -124,7 +124,7 @@ public class EZIDResponse {
      * @return all keys found in the response.
      */
     public List<String> getKeys() {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (String key : attributes.keySet()) {
             keys.add(key);
         }

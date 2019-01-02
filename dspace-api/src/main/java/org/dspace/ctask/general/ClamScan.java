@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
@@ -29,8 +31,6 @@ import org.dspace.content.service.BitstreamService;
 import org.dspace.curate.AbstractCurationTask;
 import org.dspace.curate.Curator;
 import org.dspace.curate.Suspendable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ClamScan.java
@@ -58,7 +58,7 @@ public class ClamScan extends AbstractCurationTask {
     protected final String SCAN_FAIL_MESSAGE = "Error encountered using virus service - check setup";
     protected final String NEW_ITEM_HANDLE = "in workflow";
 
-    private static final Logger log = LoggerFactory.getLogger(ClamScan.class);
+    private static final Logger log = LogManager.getLogger();
 
     protected String host = null;
     protected int port = 0;

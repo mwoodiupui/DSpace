@@ -20,7 +20,6 @@ import org.dspace.kernel.DSpaceKernel;
 import org.dspace.kernel.DSpaceKernelManager;
 import org.dspace.services.RequestService;
 
-
 /**
  * This servlet filter will handle the hookup and setup for DSpace
  * requests.  It should be applied to any webapp that is using the
@@ -37,6 +36,7 @@ public final class DSpaceWebappServletFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // ensure the kernel is running, if not then we have to die here
         try {
@@ -54,16 +54,15 @@ public final class DSpaceWebappServletFilter implements Filter {
     /* (non-Javadoc)
      * @see javax.servlet.Filter#destroy()
      */
+    @Override
     public void destroy() {
-        // clean up the logger for this webapp
-        // No longer using commons-logging (JCL), use slf4j instead
-        //LogFactory.release(Thread.currentThread().getContextClassLoader());
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet
      * .FilterChain)
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException {
         // now do some DSpace stuff

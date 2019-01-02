@@ -23,6 +23,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -48,8 +50,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMResult;
 import org.jdom.transform.JDOMSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configurable XSLT-driven dissemination Crosswalk
@@ -85,7 +85,7 @@ public class XSLTDisseminationCrosswalk
     /**
      * log4j category
      */
-    private static final Logger LOG = LoggerFactory.getLogger(XSLTDisseminationCrosswalk.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * DSpace context, will be created if XSLTDisseminationCrosswalk had been started by command-line.

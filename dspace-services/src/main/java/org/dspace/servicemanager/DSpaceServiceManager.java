@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.Activator;
 import org.dspace.kernel.mixins.ConfigChangeListener;
 import org.dspace.kernel.mixins.InitializedService;
@@ -26,8 +28,6 @@ import org.dspace.kernel.mixins.ShutdownService;
 import org.dspace.servicemanager.config.DSpaceConfigurationService;
 import org.dspace.servicemanager.spring.SpringServiceManager;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,7 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public final class DSpaceServiceManager implements ServiceManagerSystem {
 
-    private static Logger log = LoggerFactory.getLogger(DSpaceServiceManager.class);
+    private static Logger log = LogManager.getLogger();
 
     private final DSpaceConfigurationService configurationService;
 

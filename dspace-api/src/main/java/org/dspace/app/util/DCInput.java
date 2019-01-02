@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.content.MetadataSchema;
 import org.dspace.core.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class representing a line in an input form.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DCInput {
 
-    private static final Logger log = LoggerFactory.getLogger(DCInput.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * the DC element name
@@ -342,7 +342,7 @@ public class DCInput {
 
     /**
      * Get the style for this form field
-     * 
+     *
      * @return the style
      */
     public String getStyle() {

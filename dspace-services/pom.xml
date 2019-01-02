@@ -84,10 +84,19 @@
     <dependencies>
         <!-- logging -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
-        <!-- spring service manager -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+        </dependency>
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-slf4j-impl</artifactId>
+	</dependency>
+
+        <!-- Spring service manager -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
@@ -139,21 +148,6 @@
             <version>6.1.26</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-	    <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-core</artifactId>
-	    <version>${log4j.version}</version>
-        </dependency>
-	<dependency>
-	    <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-slf4j-impl</artifactId>
-	    <version>${log4j.version}</version>
-	</dependency>
         <dependency>
             <!-- needed to ensure that all JCL is 1.1.1 -->
             <groupId>commons-logging</groupId>

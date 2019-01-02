@@ -33,6 +33,8 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.util.DateUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -40,8 +42,6 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.service.ClientInfoService;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
@@ -58,7 +58,7 @@ import org.springframework.stereotype.Component;
 public class JWTTokenHandler implements InitializingBean {
 
     private static final int MAX_CLOCK_SKEW_SECONDS = 60;
-    private static final Logger log = LoggerFactory.getLogger(JWTTokenHandler.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     private List<JWTClaimProvider> jwtClaimProviders;

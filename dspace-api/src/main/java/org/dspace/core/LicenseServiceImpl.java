@@ -18,10 +18,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.service.LicenseService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulate the deposit license.
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author mhwood
  */
 public class LicenseServiceImpl implements LicenseService {
-    private final Logger log = LoggerFactory.getLogger(LicenseServiceImpl.class);
+    private final Logger log = LogManager.getLogger();
 
     /**
      * The default license

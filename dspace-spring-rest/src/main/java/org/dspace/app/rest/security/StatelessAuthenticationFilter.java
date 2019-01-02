@@ -14,12 +14,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.services.RequestService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +35,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  */
 public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(StatelessAuthenticationFilter.class);
+    private static final Logger log = LogManager.getLogger();
 
     private RestAuthenticationService restAuthenticationService;
 

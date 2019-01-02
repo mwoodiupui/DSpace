@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utility class to send an input stream with Range header and ETag support.
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultipartFileSender {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LogManager.getLogger();
 
     private static final String METHOD_HEAD = "HEAD";
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";

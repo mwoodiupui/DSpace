@@ -16,12 +16,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.config.SpringLoader;
 import org.dspace.servicemanager.DSpaceServiceManager;
 import org.dspace.servicemanager.ServiceManagerSystem;
 import org.dspace.servicemanager.config.DSpaceConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -36,7 +36,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public final class SpringServiceManager implements ServiceManagerSystem {
 
-    private static Logger log = LoggerFactory.getLogger(SpringServiceManager.class);
+    private static Logger log = LogManager.getLogger();
 
     private ClassPathXmlApplicationContext applicationContext;
 

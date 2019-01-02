@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.service.ClientInfoService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.statistics.util.IPTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -27,7 +27,7 @@ public class ClientInfoServiceImpl implements ClientInfoService {
 
     private static final String X_FORWARDED_FOR_HEADER = "X-Forwarded-For";
 
-    private static final Logger log = LoggerFactory.getLogger(ClientInfoServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
 
     private Boolean useProxiesEnabled;
 

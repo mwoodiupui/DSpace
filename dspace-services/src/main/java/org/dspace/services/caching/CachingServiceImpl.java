@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Statistics;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.ServiceManager;
 import org.dspace.kernel.mixins.ConfigChangeListener;
 import org.dspace.kernel.mixins.InitializedService;
@@ -35,8 +37,6 @@ import org.dspace.services.model.CacheConfig;
 import org.dspace.services.model.CacheConfig.CacheScope;
 import org.dspace.services.model.RequestInterceptor;
 import org.dspace.utils.servicemanager.ProviderHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -49,7 +49,7 @@ import org.springframework.beans.factory.annotation.Required;
 public final class CachingServiceImpl
     implements CachingService, InitializedService, ShutdownService, ConfigChangeListener, ServiceChangeListener {
 
-    private static Logger log = LoggerFactory.getLogger(CachingServiceImpl.class);
+    private static Logger log = LogManager.getLogger();
 
     /**
      * This is the event key for a full cache reset.

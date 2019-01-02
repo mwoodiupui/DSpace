@@ -10,11 +10,11 @@ package org.dspace.app.rest.security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.jwt.JWTTokenHandler;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomLogoutHandler implements LogoutHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(JWTTokenHandler.class);
+    private static final Logger log = LogManager.getLogger(JWTTokenHandler.class);
 
     @Autowired
     private RestAuthenticationService restAuthenticationService;

@@ -11,20 +11,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.POITextExtractor;
 import org.apache.poi.extractor.ExtractorFactory;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.xmlbeans.XmlException;
 import org.dspace.content.Item;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Extract flat text from Microsoft Word documents (.doc, .docx).
  */
 public class PoiWordFilter
     extends MediaFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(PoiWordFilter.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public String getFilteredName(String oldFilename) {

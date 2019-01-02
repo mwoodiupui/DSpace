@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.Constants;
 import org.dspace.storage.rdbms.DatabaseUtils;
 import org.dspace.workflow.factory.WorkflowServiceFactory;
@@ -18,8 +20,6 @@ import org.dspace.xmlworkflow.service.XmlWorkflowService;
 import org.flywaydb.core.api.migration.MigrationChecksumProvider;
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import org.flywaydb.core.internal.util.scanner.classpath.ClassPathResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class automatically migrates your DSpace Database to use the
@@ -42,7 +42,7 @@ public class V5_0_2014_11_04__Enable_XMLWorkflow_Migration
     /**
      * logging category
      */
-    private static final Logger log = LoggerFactory.getLogger(V5_0_2014_11_04__Enable_XMLWorkflow_Migration.class);
+    private static final Logger log = LogManager.getLogger();
 
     // Size of migration script run
     Integer migration_file_size = -1;

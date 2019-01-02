@@ -24,10 +24,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.identifier.DOI;
 import org.dspace.identifier.IdentifierException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A request to EZID concerning a given (or expected) identifier.
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark H. Wood
  */
 public class EZIDRequest {
-    private static final Logger log = LoggerFactory.getLogger(EZIDRequest.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final String ID_PATH = "/id/" + DOI.SCHEME;
 
@@ -255,7 +255,7 @@ public class EZIDRequest {
      */
     public EZIDResponse withdraw(String name)
         throws IOException, IdentifierException, URISyntaxException {
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put(MD_KEY_STATUS, "unavailable");
         return modify(name, metadata);
     }
@@ -272,7 +272,7 @@ public class EZIDRequest {
      */
     public EZIDResponse withdraw(String name, String reason)
         throws IOException, IdentifierException, URISyntaxException {
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put(MD_KEY_STATUS, "unavailable | " + escape(reason));
         return modify(name, metadata);
     }
