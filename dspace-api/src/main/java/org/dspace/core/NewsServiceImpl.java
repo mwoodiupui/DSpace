@@ -19,11 +19,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.service.NewsService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author mhwood
  */
 public class NewsServiceImpl implements NewsService {
-    private final Logger log = LoggerFactory.getLogger(NewsServiceImpl.class);
+    private final Logger log = LogManager.getLogger();
 
     private List<String> acceptableFilenames;
 

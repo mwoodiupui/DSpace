@@ -21,6 +21,8 @@ import java.util.UUID;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeConfiguration;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
@@ -51,8 +53,6 @@ import org.dspace.xmlworkflow.storedcomponents.PoolTask;
 import org.dspace.xmlworkflow.storedcomponents.service.ClaimedTaskService;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
 import org.dspace.xmlworkflow.storedcomponents.service.PoolTaskService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -63,7 +63,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author kevinvandevelde at atmire.com
  */
 public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements GroupService {
-    private static final Logger log = LoggerFactory.getLogger(GroupServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired(required = true)
     protected GroupDAO groupDAO;
@@ -401,7 +401,8 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
     }
 
     /**
-     * DEPRECATED: Please use {@code findAll(Context context, List<MetadataField> metadataSortFields)} instead
+     * DEPRECATED: Please use {@code findAll(Context context, List<MetadataField> metadataSortFields)} instead.
+     * @throws java.sql.SQLException passed through
      */
     @Override
     @Deprecated

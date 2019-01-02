@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.DSpaceKernel;
 import org.dspace.kernel.DSpaceKernelManager;
 import org.dspace.kernel.ServiceManager;
 import org.dspace.services.RequestService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test servlet for trying out the jetty server
@@ -30,7 +30,7 @@ public class SampleServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static Logger log = LoggerFactory.getLogger(SampleServlet.class);
+    private static Logger log = LogManager.getLogger();
 
     private transient RequestService requestService;
 

@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.services.CachingService;
 import org.dspace.services.EventService;
 import org.dspace.services.RequestService;
@@ -25,8 +27,6 @@ import org.dspace.services.model.Event;
 import org.dspace.services.model.Event.Scope;
 import org.dspace.services.model.EventListener;
 import org.dspace.services.model.RequestInterceptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public final class SystemEventService implements EventService {
 
-    private final Logger log = LoggerFactory.getLogger(SystemEventService.class);
+    private final Logger log = LogManager.getLogger();
 
     private static final String QUEUE_CACHE_NAME = "eventQueueCache";
 

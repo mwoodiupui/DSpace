@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
@@ -25,8 +27,6 @@ import org.dspace.core.Context;
 import org.dspace.identifier.doi.DOIConnector;
 import org.dspace.identifier.doi.DOIIdentifierException;
 import org.dspace.identifier.service.DOIService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class DOIIdentifierProvider
     extends IdentifierProvider {
-    private static final Logger log = LoggerFactory.getLogger(DOIIdentifierProvider.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * A DOIConnector connects the DOIIdentifierProvider to the API of the DOI

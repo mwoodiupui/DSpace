@@ -21,10 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.service.ClientInfoService;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SpiderDetectorServiceImpl implements SpiderDetectorService {
 
-    private static final Logger log = LoggerFactory.getLogger(SpiderDetectorServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
 
     private Boolean useCaseInsensitiveMatching;
 
@@ -63,6 +63,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
         this.clientInfoService = clientInfoService;
     }
 
+    @Override
     public IPTable getTable() {
         return table;
     }
@@ -79,6 +80,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
      * @param agent    User-Agent header value, or null.
      * @return true if the client matches any spider characteristics list.
      */
+    @Override
     public boolean isSpider(String clientIP, String proxyIPs, String hostname, String agent) {
         // See if any agent patterns match
         if (null != agent) {
@@ -144,6 +146,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
      * @return a vector full of patterns
      * @throws IOException could not happen since we check the file be4 we use it
      */
+    @Override
     public Set<String> readPatterns(File patternFile)
         throws IOException {
         Set<String> patterns = new HashSet<>();
@@ -216,6 +219,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
      * @param request
      * @return true|false if the request was detected to be from a spider.
      */
+    @Override
     public boolean isSpider(HttpServletRequest request) {
         return isSpider(request.getRemoteAddr(),
                         request.getHeader("X-Forwarded-For"),
@@ -229,6 +233,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
      * @param ip
      * @return if is spider IP
      */
+    @Override
     public boolean isSpider(String ip) {
         if (table == null) {
             loadSpiderIpAddresses();
@@ -248,6 +253,7 @@ public class SpiderDetectorServiceImpl implements SpiderDetectorService {
     /*
      *  loader to populate the table from files.
      */
+    @Override
     public synchronized void loadSpiderIpAddresses() {
 
         if (table == null) {

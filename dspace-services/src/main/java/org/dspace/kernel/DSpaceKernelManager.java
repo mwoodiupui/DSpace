@@ -22,8 +22,8 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Aaron Zeckoski (azeckoski @ gmail.com)
  */
 public final class DSpaceKernelManager {
-    private static Logger log = LoggerFactory.getLogger(DSpaceKernelManager.class);
+    private static Logger log = LogManager.getLogger();
 
     private static DSpaceKernel defaultKernel = null;
 

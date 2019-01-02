@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.crosswalk.CrosswalkException;
@@ -25,8 +27,6 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.utils.DSpace;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide XML based metadata crosswalk for EZID Identifier provider module.
@@ -38,7 +38,7 @@ public class DataCiteXMLCreator {
     /**
      * log4j category
      */
-    private static final Logger LOG = LoggerFactory.getLogger(DataCiteXMLCreator.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     /**
      * Name of crosswalk to convert metadata into DataCite Metadata Scheme.

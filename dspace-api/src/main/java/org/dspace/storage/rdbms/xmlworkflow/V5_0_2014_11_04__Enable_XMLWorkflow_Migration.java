@@ -10,12 +10,12 @@ package org.dspace.storage.rdbms.xmlworkflow;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.storage.rdbms.DatabaseUtils;
 import org.dspace.storage.rdbms.migration.MigrationUtils;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class automatically migrates your DSpace Database to use the
@@ -38,7 +38,7 @@ public class V5_0_2014_11_04__Enable_XMLWorkflow_Migration
     /**
      * logging category
      */
-    private static final Logger log = LoggerFactory.getLogger(V5_0_2014_11_04__Enable_XMLWorkflow_Migration.class);
+    private static final Logger log = LogManager.getLogger();
 
     // Size of migration script run
     Integer migration_file_size = -1;

@@ -79,7 +79,21 @@
     </profiles>
 
     <dependencies>
-        <!-- spring service manager -->
+        <!-- logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+        </dependency>
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-slf4j-impl</artifactId>
+	</dependency>
+
+        <!-- Spring service manager -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
@@ -130,6 +144,13 @@
             <artifactId>jetty-servlet-tester</artifactId>
             <version>6.1.26</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- needed to ensure that all JCL is 1.1.1 -->
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

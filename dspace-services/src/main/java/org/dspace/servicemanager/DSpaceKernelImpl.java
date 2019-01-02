@@ -23,6 +23,8 @@ import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfoSupport;
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.kernel.DSpaceKernel;
 import org.dspace.kernel.DSpaceKernelManager;
 import org.dspace.kernel.ServiceManager;
@@ -30,15 +32,13 @@ import org.dspace.servicemanager.config.DSpaceConfigurationService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.KernelStartupCallbackService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the kernel implementation which starts up the core of DSpace,
  * registers the mbean, and initializes the DSpace object.
  * It also loads up the configuration.  Sets a JRE shutdown hook.
  * <p>
- * Note that this does not start itself and calling the constuctor does
+ * Note that this does not start itself and calling the constructor does
  * not actually start it up either. It has to be explicitly started by
  * calling the start method so something in the system needs to do that.
  * If the bean is already started then calling start on it again has no
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class DSpaceKernelImpl implements DSpaceKernel, DynamicMBean {
 
-    private static Logger log = LoggerFactory.getLogger(DSpaceKernelImpl.class);
+    private static Logger log = LogManager.getLogger();
 
     /**
      * Creates a DSpace Kernel, does not do any checks though.

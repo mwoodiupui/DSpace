@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.Filter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.filter.DSpaceRequestContextFilter;
 import org.dspace.app.rest.model.hateoas.DSpaceLinkRelationProvider;
 import org.dspace.app.rest.parameter.resolver.SearchFilterResolver;
@@ -21,8 +23,6 @@ import org.dspace.app.rest.utils.DSpaceKernelInitializer;
 import org.dspace.app.sitemap.GenerateSitemaps;
 import org.dspace.app.util.DSpaceContextListener;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -57,7 +57,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     private ApplicationConfig configuration;

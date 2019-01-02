@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.servicemanager.DSpaceKernelInit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Attempt to parse date strings in a variety of formats.  This uses an external
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author mwood
  */
 public class MultiFormatDateParser {
-    private static final Logger log = LoggerFactory.getLogger(MultiFormatDateParser.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * A list of rules, each binding a regular expression to a date format.
@@ -107,7 +107,7 @@ public class MultiFormatDateParser {
                     }
                 } catch (ParseException ex) {
                     log.info("Date string '{}' matched pattern '{}' but did not parse:  {}",
-                             new String[] {dateString, candidate.format.toPattern(), ex.getMessage()});
+                             dateString, candidate.format.toPattern(), ex.getMessage());
                     continue;
                 }
                 return result;

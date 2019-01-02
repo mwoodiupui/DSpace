@@ -30,9 +30,9 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.event.Event;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.io.ClassPathResource;
 
@@ -47,7 +47,7 @@ import org.springframework.core.io.ClassPathResource;
  */
 public final class DSpaceConfigurationService implements ConfigurationService {
 
-    private static final Logger log = LoggerFactory.getLogger(DSpaceConfigurationService.class);
+    private static final Logger log = LogManager.getLogger();
 
     public static final String DSPACE = "dspace";
     public static final String EXT_CONFIG = "cfg";

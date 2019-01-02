@@ -17,11 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(SpecialGroupClaimProvider.class);
+    private static final Logger log = LogManager.getLogger();
 
     public static final String SPECIAL_GROUPS = "sg";
 

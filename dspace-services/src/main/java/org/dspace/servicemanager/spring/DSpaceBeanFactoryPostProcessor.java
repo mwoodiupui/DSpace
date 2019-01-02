@@ -7,6 +7,8 @@
  */
 package org.dspace.servicemanager.spring;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.servicemanager.ServiceManagerSystem;
 import org.dspace.servicemanager.config.DSpaceConfigurationService;
 import org.dspace.services.ConfigurationService;
@@ -24,6 +26,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public final class DSpaceBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
     private ServiceManagerSystem serviceManager;
+
+    private static final Logger log = LogManager.getLogger();
+
     private DSpaceConfigurationService configurationService;
     private boolean testMode = false;
 
