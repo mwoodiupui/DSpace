@@ -30,31 +30,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author mwood
  */
-public class PasswordHash {
+public class PasswordHash
+        extends AbstractPasswordHash {
     private static final Logger log = LoggerFactory.getLogger(PasswordHash.class);
-    private static final ConfigurationService config
-        = DSpaceServicesFactory.getInstance().getConfigurationService();
-    private static final Charset UTF_8 = Charset.forName("UTF-8"); // Should always succeed:  UTF-8 is required
-
-    private static final String DEFAULT_DIGEST_ALGORITHM = "SHA-512"; // XXX magic
-    private static final String ALGORITHM_PROPERTY = "authentication-password.digestAlgorithm";
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final int SALT_BYTES = 128 / 8; // XXX magic we want 128 bits
     private static final int HASH_ROUNDS = 1024; // XXX magic 1024 rounds
     private static final int SEED_BYTES = 64; // XXX magic
-    private static final int RESEED_INTERVAL = 100; // XXX magic
-
-    /**
-     * A secure random number generator instance.
-     */
-    private static SecureRandom rng = null;
-
-    /**
-     * How many times has the RNG been called without re-seeding?
-     */
-    private static int rngUses;
-
-    private String algorithm;
-    private byte[] salt;
     private byte[] hash;
 
     /**
@@ -66,7 +48,7 @@ public class PasswordHash {
     /**
      * Construct a hash structure from existing data, just for passing around.
      *
-     * @param algorithm the digest algorithm used in producing {@code hash}.
+     * @param algorithm the digest hashAlgorithm used in producing {@code hash}.
      *                  If empty, set to null.  Other methods will treat this as unsalted MD5.
      *                  If you want salted multi-round MD5, specify "MD5".
      * @param salt      the salt hashed with the secret, or null.
@@ -74,9 +56,9 @@ public class PasswordHash {
      */
     public PasswordHash(String algorithm, byte[] salt, byte[] hash) {
         if ((null != algorithm) && algorithm.isEmpty()) {
-            this.algorithm = null;
+            this.hashAlgorithm = null;
         } else {
-            this.algorithm = algorithm;
+            this.hashAlgorithm = algorithm;
         }
 
         this.salt = salt;
@@ -88,7 +70,7 @@ public class PasswordHash {
      * Convenience:  like {@link #PasswordHash(String, byte[], byte[])} but with
      * hexadecimal-encoded {@code String}s.
      *
-     * @param algorithm the digest algorithm used in producing {@code hash}.
+     * @param algorithm the digest hashAlgorithm used in producing {@code hash}.
      *                  If empty, set to null.  Other methods will treat this as unsalted MD5.
      *                  If you want salted multi-round MD5, specify "MD5".
      * @param salt      hexadecimal digits encoding the bytes of the salt, or null.
@@ -98,9 +80,9 @@ public class PasswordHash {
     public PasswordHash(String algorithm, String salt, String hash)
         throws DecoderException {
         if ((null != algorithm) && algorithm.isEmpty()) {
-            this.algorithm = null;
+            this.hashAlgorithm = null;
         } else {
-            this.algorithm = algorithm;
+            this.hashAlgorithm = algorithm;
         }
 
         if (null == salt) {
@@ -118,7 +100,7 @@ public class PasswordHash {
 
     /**
      * Construct a hash structure from a cleartext password using the configured
-     * digest algorithm.
+ digest hashAlgorithm.
      *
      * @param password the secret to be hashed.
      */
@@ -126,12 +108,12 @@ public class PasswordHash {
         // Generate some salt
         salt = generateSalt();
 
-        // What digest algorithm to use?
-        algorithm = config.getPropertyAsType(ALGORITHM_PROPERTY, DEFAULT_DIGEST_ALGORITHM);
+        // What digest hashAlgorithm to use?
+        hashAlgorithm = CONFIG.getPropertyAsType(ALGORITHM_PROPERTY, DEFAULT_DIGEST_ALGORITHM);
 
         // Hash it!
         try {
-            hash = digest(salt, algorithm, password);
+            hash = digest(salt, hashAlgorithm, password);
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
             hash = new byte[] {0};
@@ -144,10 +126,11 @@ public class PasswordHash {
      * @param secret string to be hashed and compared to this hash.
      * @return true if secret hashes to the value held by this instance.
      */
+    @Override
     public boolean matches(String secret) {
         byte[] candidate;
         try {
-            candidate = digest(salt, algorithm, secret);
+            candidate = digest(salt, hashAlgorithm, secret);
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
             return false;
@@ -160,6 +143,7 @@ public class PasswordHash {
      *
      * @return the value of hash
      */
+    @Override
     public byte[] getHash() {
         return hash;
     }
@@ -169,6 +153,7 @@ public class PasswordHash {
      *
      * @return hash encoded as hexadecimal digits, or null if none.
      */
+    @Override
     public String getHashString() {
         if (null != hash) {
             return new String(Hex.encodeHex(hash));
@@ -178,76 +163,13 @@ public class PasswordHash {
     }
 
     /**
-     * Get the salt.
-     *
-     * @return the value of salt
-     */
-    public byte[] getSalt() {
-        return salt;
-    }
-
-    /**
-     * Get the salt, as a String.
-     *
-     * @return salt encoded as hexadecimal digits, or null if none.
-     */
-    public String getSaltString() {
-        if (null != salt) {
-            return new String(Hex.encodeHex(salt));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get the value of algorithm
-     *
-     * @return the value of algorithm
-     */
-    public String getAlgorithm() {
-        return algorithm;
-    }
-
-    /**
-     * The digest algorithm used if none is configured.
-     *
-     * @return name of the default digest.
-     */
-    static public String getDefaultAlgorithm() {
-        return DEFAULT_DIGEST_ALGORITHM;
-    }
-
-    /**
-     * Generate an array of random bytes.
-     */
-    private synchronized byte[] generateSalt() {
-        // Initialize a random-number generator
-        if (null == rng) {
-            rng = new SecureRandom();
-            log.info("Initialized a random number stream using {} provided by {}",
-                     rng.getAlgorithm(), rng.getProvider());
-            rngUses = 0;
-        }
-
-        if (rngUses++ > RESEED_INTERVAL) { // re-seed the generator periodically to break up possible patterns
-            log.debug("Re-seeding the RNG");
-            rng.setSeed(rng.generateSeed(SEED_BYTES));
-            rngUses = 0;
-        }
-
-        salt = new byte[SALT_BYTES];
-        rng.nextBytes(salt);
-        return salt;
-    }
-
-    /**
-     * Generate a salted hash of a string using a given algorithm.
+     * Generate a salted hash of a string using a given hashAlgorithm.
      *
      * @param salt      random bytes to salt the hash.
-     * @param algorithm name of the digest algorithm to use.  Assume unsalted MD5 if null.
+     * @param algorithm name of the digest hashAlgorithm to use.  Assume unsalted MD5 if null.
      * @param secret    the string to be hashed.  Null is treated as an empty string ("").
      * @return hash bytes.
-     * @throws NoSuchAlgorithmException if algorithm is unknown.
+     * @throws NoSuchAlgorithmException if hashAlgorithm is unknown.
      */
     private byte[] digest(byte[] salt, String algorithm, String secret)
         throws NoSuchAlgorithmException {

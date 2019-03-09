@@ -245,7 +245,7 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     @Override
     public void setPassword(EPerson ePerson, String password) {
         PasswordHash hash = new PasswordHash(password);
-        ePerson.setDigestAlgorithm(hash.getAlgorithm());
+        ePerson.setDigestAlgorithm(hash.getHashAlgorithm());
         ePerson.setSalt(Utils.toHex(hash.getSalt()));
         ePerson.setPassword(Utils.toHex(hash.getHash()));
     }
@@ -257,7 +257,7 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
             ePerson.setSalt(null);
             ePerson.setPassword(null);
         } else {
-            ePerson.setDigestAlgorithm(password.getAlgorithm());
+            ePerson.setDigestAlgorithm(password.getHashAlgorithm());
             ePerson.setSalt(password.getSaltString());
             ePerson.setPassword(password.getHashString());
         }

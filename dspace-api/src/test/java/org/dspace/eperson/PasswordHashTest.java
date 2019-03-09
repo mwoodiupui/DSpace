@@ -50,7 +50,7 @@ public class PasswordHashTest extends AbstractDSpaceTest {
         // Test null inputs, as from NULL database columns (old EPerson using
         // unsalted hash, for example).
         h3 = new PasswordHash(null, (byte[]) null, (byte[]) null);
-        assertNull("Null algorithm", h3.getAlgorithm());
+        assertNull("Null algorithm", h3.getHashAlgorithm());
         assertNull("Null salt", h3.getSalt());
         assertNull("Null hash", h3.getHash());
         assertFalse("Match null string?", h3.matches(null));
@@ -58,7 +58,7 @@ public class PasswordHashTest extends AbstractDSpaceTest {
 
         // Test 3-argument constructor with null string arguments
         h3 = new PasswordHash(null, (String) null, (String) null);
-        assertNull("Null algorithm", h3.getAlgorithm());
+        assertNull("Null algorithm", h3.getHashAlgorithm());
         assertNull("Null salt", h3.getSalt());
         assertNull("Null hash", h3.getHash());
         assertFalse("Match null string?", h3.matches(null));
@@ -67,12 +67,12 @@ public class PasswordHashTest extends AbstractDSpaceTest {
         // Test single-argument constructor, which does the hashing.
         String password = "I've got a secret.";
         h1 = new PasswordHash(password);
-        assertEquals("SHA-512", h1.getAlgorithm());
+        assertEquals("SHA-512", h1.getHashAlgorithm());
         assertFalse("Match against a different string", h1.matches("random rubbish"));
         assertTrue("Match against the correct string", h1.matches(password));
 
         // Test 3-argument constructor with non-null data.
-        h3 = new PasswordHash(h1.getAlgorithm(), h1.getSalt(), h1.getHash());
+        h3 = new PasswordHash(h1.getHashAlgorithm(), h1.getSalt(), h1.getHash());
         assertTrue("Match a duplicate original made from getter values", h3.matches(password));
     }
 

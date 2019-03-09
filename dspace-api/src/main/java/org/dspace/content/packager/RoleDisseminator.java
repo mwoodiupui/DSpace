@@ -434,7 +434,7 @@ public class RoleDisseminator implements PackageDisseminator {
             if (null != password) {
                 writer.writeStartElement(PASSWORD_HASH);
 
-                String algorithm = password.getAlgorithm();
+                String algorithm = password.getHashAlgorithm();
                 if (null != algorithm) {
                     writer.writeAttribute(PASSWORD_DIGEST, algorithm);
                 }
