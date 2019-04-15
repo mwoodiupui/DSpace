@@ -7,9 +7,11 @@
  */
 package org.dspace.app.util;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -19,7 +21,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.opencsv.CSVWriter;
@@ -38,12 +39,10 @@ import net.sf.ehcache.statistics.StatisticsGateway;
 @Named
 public class CacheSnapshooter {
     /** Take samples this many seconds apart. If less than or equal to 0, do nothing.  Required. */
-    @Inject
-    private Integer interval;
+    protected int interval;
 
     /** Write samples in CSV to this stream.  Required. */
-    @Inject
-    private OutputStream output;
+    protected OutputStream output;
 
     /** Set up the timer and task, and start them. */
     @PostConstruct
@@ -54,6 +53,22 @@ public class CacheSnapshooter {
                     = executor.scheduleAtFixedRate(new Sampler(output), 0,
                             interval, TimeUnit.SECONDS);
         }
+    }
+
+    /**
+     * Take samples this many seconds apart. If less than or equal to 0, do nothing.  Required.
+     * @param interval the interval to set
+     */
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    /**
+     * Write samples in CSV to this stream.  Required.
+     * @param output the output to set
+     */
+    public void setOutput(OutputStream output) {
+        this.output = output;
     }
 
     /**
@@ -81,7 +96,9 @@ public class CacheSnapshooter {
          * @param output all output will be written here.
          */
         private Sampler(OutputStream output) {
-            writer = new CSVWriter(new OutputStreamWriter(output));
+            writer = new CSVWriter(
+                    new BufferedWriter(
+                            new OutputStreamWriter(output, StandardCharsets.UTF_8)));
             dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
             writer.writeNext(HEADER);

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns='http://www.springframework.org/schema/beans'
+       xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+       xsi:schemaLocation='http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd'
+       default-lazy-init='true'>
+
+  <!--
+    Write periodic snapshots of cache performance data to a file.
+    -->
+  <bean id='cacheSnapshooter'
+        class='org.dspace.app.util.CacheSnapshooter'
+        lazy-init='false'>
+    <!-- Snapshot every this many seconds -->
+    <property name='interval' value='10'/>
+    <!-- Write CSV snapshot data here -->
+    <property name='output'>
+      <bean class='java.io.FileOutputStream'>
+        <constructor-arg value='cache-snapshots.csv'/>
+      </bean>
+    </property>
+  </bean>
+
+</beans>
