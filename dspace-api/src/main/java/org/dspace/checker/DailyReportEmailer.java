@@ -17,16 +17,18 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.checker.factory.CheckerServiceFactory;
 import org.dspace.checker.service.SimpleReporterService;
-import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
+import org.dspace.services.ConfigurationService;
+import org.dspace.utils.DSpace;
 
 /**
  * <p>
@@ -40,10 +42,12 @@ import org.dspace.core.Email;
  * @author Nathan Sarr
  */
 public class DailyReportEmailer {
-    /**
-     * log4j logger.
-     */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(DailyReportEmailer.class);
+    /** Logger. */
+    private static final Logger LOG = LogManager.getLogger();
+
+    /** DSpace configuration. */
+    private static final ConfigurationService CFG
+            = new DSpace().getConfigurationService();
 
     /**
      * Default constructor.
@@ -62,14 +66,16 @@ public class DailyReportEmailer {
     public void sendReport(File attachment, int numberOfBitstreams)
         throws IOException, javax.mail.MessagingException {
         if (numberOfBitstreams > 0) {
-            String hostname = ConfigurationManager.getProperty("dspace.hostname");
+            String hostname = CFG.getProperty("dspace.hostname");
             Email email = new Email();
             email.setSubject(
-                "Checksum checker Report - " + numberOfBitstreams + " Bitstreams found with POSSIBLE issues on " +
-                    hostname);
+                "Checksum checker Report - "
+                        + numberOfBitstreams
+                        + " Bitstreams found with POSSIBLE issues on "
+                        + hostname);
             email.setContent("report is attached ...");
             email.addAttachment(attachment, "checksum_checker_report.txt");
-            email.addRecipient(ConfigurationManager.getProperty("mail.admin"));
+            email.addRecipients(CFG.getArrayProperty("mail.admin"));
             email.send();
         }
     }
@@ -97,7 +103,7 @@ public class DailyReportEmailer {
      */
     public static void main(String[] args) {
         // set up command line parser
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
         CommandLine line = null;
 
         // create an options object and populate it
@@ -120,7 +126,7 @@ public class DailyReportEmailer {
         try {
             line = parser.parse(options, args);
         } catch (ParseException e) {
-            log.fatal(e);
+            LOG.fatal(e);
             System.exit(1);
         }
 
@@ -163,7 +169,7 @@ public class DailyReportEmailer {
             int numBitstreams = 0;
 
             // create a temporary file in the log directory
-            String dirLocation = ConfigurationManager.getProperty("log.report.dir");
+            String dirLocation = CFG.getProperty("log.report.dir");
             File directory = new File(dirLocation);
 
             if (directory.exists() && directory.isDirectory()) {
@@ -238,7 +244,7 @@ public class DailyReportEmailer {
                 }
             }
         } catch (MessagingException | SQLException | IOException e) {
-            log.fatal(e);
+            LOG.fatal(e);
         } finally {
             if (context != null && context.isValid()) {
                 context.abort();
@@ -246,14 +252,14 @@ public class DailyReportEmailer {
             if (writer != null) {
                 try {
                     writer.close();
-                } catch (Exception e) {
-                    log.fatal("Could not close writer", e);
+                } catch (IOException e) {
+                    LOG.fatal("Could not close writer", e);
                 }
             }
 
             if (report != null && report.exists()) {
                 if (!report.delete()) {
-                    log.error("Unable to delete report file");
+                    LOG.error("Unable to delete report file");
                 }
             }
         }

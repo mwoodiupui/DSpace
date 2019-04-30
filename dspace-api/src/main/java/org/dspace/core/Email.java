@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -163,6 +164,15 @@ public class Email {
      */
     public void addRecipient(String email) {
         recipients.add(email);
+    }
+
+    /**
+     * Add multiple recipients.
+     *
+     * @param addresses recipient email addresses.
+     */
+    public void addRecipients(String[] addresses) {
+        recipients.addAll(Arrays.asList(addresses));
     }
 
     /**
@@ -456,18 +466,18 @@ public class Email {
      */
     public static void main(String[] args) {
         ConfigurationService config = DSpaceServicesFactory.getInstance().getConfigurationService();
-        String to = config.getProperty("mail.admin");
+        String[] to = config.getArrayProperty("mail.admin");
         String subject = "DSpace test email";
         String server = config.getProperty("mail.server");
         String url = config.getProperty("dspace.url");
         Email e = new Email();
         e.setSubject(subject);
-        e.addRecipient(to);
+        e.addRecipients(to);
         e.content = "This is a test email sent from DSpace: " + url;
         System.out.println("\nAbout to send test email:");
-        System.out.println(" - To: " + to);
-        System.out.println(" - Subject: " + subject);
-        System.out.println(" - Server: " + server);
+        System.out.format(" - To: %s%n", String.join(", ", to));
+        System.out.format(" - Subject: %s%n", subject);
+        System.out.format(" - Server: %s%n", server);
         boolean disabled = config.getBooleanProperty("mail.server.disabled", false);
         try {
             if (disabled) {
