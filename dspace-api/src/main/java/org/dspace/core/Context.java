@@ -35,8 +35,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Class representing the context of a particular DSpace operation. This stores
- * information such as the current authenticated user and the database
- * connection being used.
+ * information such as the current authenticated user.
  * <P>
  * Typical use of the context object will involve constructing one, and setting
  * the current user if one is authenticated. Several operations may be performed
@@ -46,11 +45,9 @@ import org.springframework.util.CollectionUtils;
  * changes and free up the resources.
  * <P>
  * The context object is also used as a cache for CM API objects.
- *
- * @version $Revision$
  */
 public class Context implements AutoCloseable {
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(Context.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger();
     protected static final AtomicBoolean databaseUpdated = new AtomicBoolean(false);
 
     /**
@@ -107,7 +104,7 @@ public class Context implements AutoCloseable {
     /**
      * Cache that is only used the context is in READ_ONLY mode
      */
-    private ContextReadOnlyCache readOnlyCache = new ContextReadOnlyCache();
+    private final ContextReadOnlyCache readOnlyCache = new ContextReadOnlyCache();
 
     protected EventService eventService;
 
@@ -148,9 +145,7 @@ public class Context implements AutoCloseable {
     }
 
     /**
-     * Initializes a new context object.
-     *
-     * @throws SQLException if there was an error obtaining a database connection
+     * Common initialization of the new context object.
      */
     protected void init() {
         updateDatabase();
@@ -283,11 +278,12 @@ public class Context implements AutoCloseable {
     /**
      * Restore the previous Authorisation System State. If the state was not
      * changed by the current caller a warning will be displayed in log. Use:
-     * <code>
-     * mycontext.turnOffAuthorisationSystem();
-     * some java code that require no authorisation check
-     * mycontext.restoreAuthSystemState();
-     * </code> If Context debug is enabled, the correct sequence calling will be
+     * <pre>{@code
+     *   mycontext.turnOffAuthorisationSystem();
+     *   // some java code that require no authorisation check
+     *   mycontext.restoreAuthSystemState();
+     * }</pre>
+     * If Context debug is enabled, the correct sequence calling will be
      * checked and a warning will be displayed if not.
      */
     public void restoreAuthSystemState() {
@@ -320,7 +316,7 @@ public class Context implements AutoCloseable {
                                       + previousCaller));
             }
         }
-        ignoreAuth = previousState.booleanValue();
+        ignoreAuth = previousState;
     }
 
     /**
@@ -340,7 +336,7 @@ public class Context implements AutoCloseable {
      * Get extra information to be logged with message logged in the scope of
      * this context.
      *
-     * @return the extra log info - guaranteed non- <code>null</code>
+     * @return the extra log info - guaranteed non-<code>null</code>
      */
     public String getExtraLogInfo() {
         return extraLogInfo;
@@ -424,9 +420,10 @@ public class Context implements AutoCloseable {
         }
     }
 
-
+    /**
+     * Commit any changes made as part of the transaction.
+     */
     public void dispatchEvents() {
-        // Commit any changes made as part of the transaction
         Dispatcher dispatcher = null;
 
         try {
@@ -474,7 +471,7 @@ public class Context implements AutoCloseable {
             throw new IllegalStateException("Attempt to mutate object in read-only context");
         }
         if (events == null) {
-            events = new LinkedList<Event>();
+            events = new LinkedList<>();
         }
 
         events.add(event);
@@ -490,6 +487,9 @@ public class Context implements AutoCloseable {
         return events;
     }
 
+    /**
+     * @return true if the event list is not empty.
+     */
     public boolean hasEvents() {
         return !CollectionUtils.isEmpty(events);
     }
@@ -535,7 +535,7 @@ public class Context implements AutoCloseable {
                 if (!dbConnection.isSessionAlive()) {
                     dbConnection.closeDBConnection();
                 }
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 log.error("Exception aborting context", ex);
             }
             events = null;
@@ -584,12 +584,7 @@ public class Context implements AutoCloseable {
      * @return true if member
      */
     public boolean inSpecialGroup(UUID groupID) {
-        if (specialGroups.contains(groupID)) {
-            // System.out.println("Contains " + groupID);
-            return true;
-        }
-
-        return false;
+        return specialGroups.contains(groupID);
     }
 
     /**
@@ -600,7 +595,7 @@ public class Context implements AutoCloseable {
      * @throws SQLException if database error
      */
     public List<Group> getSpecialGroups() throws SQLException {
-        List<Group> myGroups = new ArrayList<Group>();
+        List<Group> myGroups = new ArrayList<>();
         for (UUID groupId : specialGroups) {
             myGroups.add(EPersonServiceFactory.getInstance().getGroupService().find(this, groupId));
         }
@@ -609,6 +604,7 @@ public class Context implements AutoCloseable {
     }
 
     @Override
+    @SuppressWarnings("FinalizeDeclaration")
     protected void finalize() throws Throwable {
         /*
          * If a context is garbage-collected, we roll back and free up the
@@ -625,13 +621,14 @@ public class Context implements AutoCloseable {
         dbConnection.shutdown();
     }
 
-
     /**
-     * Returns the size of the cache of all object that have been read from the database so far. A larger number
-     * means that more memory is consumed by the cache. This also has a negative impact on the query performance. In
-     * that case you should consider uncaching entities when they are no longer needed (see
-     * {@link Context#uncacheEntity(ReloadableEntity)} () uncacheEntity}).
+     * Returns the size of the cache of all object that have been read from the
+     * database so far.  A larger number means that more memory is consumed by
+     * the cache. This also has a negative impact on the query performance. In
+     * that case you should consider uncaching entities when they are no longer
+     * needed (see {@link Context#uncacheEntity(ReloadableEntity)} () uncacheEntity}).
      *
+     * @return number of cached objects.
      * @throws SQLException When connecting to the active cache fails.
      */
     public long getCacheSize() throws SQLException {
@@ -645,7 +642,7 @@ public class Context implements AutoCloseable {
      * process a large number of records.
      *
      * READ_ONLY: READ ONLY mode will tell the database we are nog going to do any updates. This means it can disable
-     * optimalisations for delaying or grouping updates.
+     * optimisations for delaying or grouping updates.
      *
      * READ_WRITE: This is the default mode and enables the normal database behaviour. This behaviour is optimal for
      * querying and updating a
@@ -691,37 +688,6 @@ public class Context implements AutoCloseable {
      */
     public Mode getCurrentMode() {
         return mode;
-    }
-
-    /**
-     * Enable or disable "batch processing mode" for this context.
-     *
-     * Enabling batch processing mode means that the database connection is configured so that it is optimized to
-     * process a large number of records.
-     *
-     * Disabling batch processing mode restores the normal behaviour that is optimal for querying and updating a
-     * small number of records.
-     *
-     * @param batchModeEnabled When true, batch processing mode will be enabled. If false, it will be disabled.
-     * @throws SQLException When configuring the database connection fails.
-     */
-    @Deprecated
-    public void enableBatchMode(boolean batchModeEnabled) throws SQLException {
-        if (batchModeEnabled) {
-            setMode(Mode.BATCH_EDIT);
-        } else {
-            setMode(Mode.READ_WRITE);
-        }
-    }
-
-    /**
-     * Check if "batch processing mode" is enabled for this context.
-     *
-     * @return True if batch processing mode is enabled, false otherwise.
-     */
-    @Deprecated
-    public boolean isBatchModeEnabled() {
-        return mode != null && mode == Mode.BATCH_EDIT;
     }
 
     /**
