@@ -19,6 +19,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -36,6 +37,7 @@ import org.dspace.eperson.PasswordHash;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.eperson.service.PasswordHashService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -59,6 +61,9 @@ public class RoleIngester implements PackageIngester {
 
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
     protected EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
+
+    protected PasswordHashService passwordHashService
+            = EPersonServiceFactory.getInstance().getPasswordHashService();
 
     /**
      * Common code to ingest roles from a Document.
@@ -181,7 +186,10 @@ public class RoleIngester implements PackageIngester {
 
                 PasswordHash password;
                 try {
-                    password = new PasswordHash(algorithmText, saltText, element.getTextContent());
+                    password = passwordHashService.getPasswordHashInstance(
+                            algorithmText,
+                            null == saltText ? null : Hex.decodeHex(saltText.toCharArray()),
+                            Hex.decodeHex(element.getTextContent().toCharArray()));
                 } catch (DecoderException ex) {
                     throw new PackageValidationException("Unable to decode hexadecimal password hash or salt", ex);
                 }

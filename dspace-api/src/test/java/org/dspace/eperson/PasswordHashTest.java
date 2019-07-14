@@ -40,55 +40,59 @@ public class PasswordHashTest extends AbstractDSpaceTest {
 
     /**
      * Test the constructors.
+     * @throws DecoderException passed through.
      */
     @Test
     public void testConstructors()
         throws DecoderException {
-        PasswordHash h1;
-        PasswordHash h3;
+        SimplePasswordHash h1;
+        SimplePasswordHash h3;
 
         // Test null inputs, as from NULL database columns (old EPerson using
         // unsalted hash, for example).
-        h3 = new PasswordHash(null, (byte[]) null, (byte[]) null);
+        h3 = new SimplePasswordHash(null, (byte[]) null, (byte[]) null);
         assertNull("Null algorithm", h3.getHashAlgorithm());
         assertNull("Null salt", h3.getSalt());
         assertNull("Null hash", h3.getHash());
-        assertFalse("Match null string?", h3.matches(null));
-        assertFalse("Match non-null string?", h3.matches("not null"));
+        assertFalse("Match null string?", h3.equals(null));
+        assertFalse("Match non-null string?", h3.equals("not null"));
 
         // Test 3-argument constructor with null string arguments
-        h3 = new PasswordHash(null, (String) null, (String) null);
+        h3 = new SimplePasswordHash(null, (String) null, (String) null);
         assertNull("Null algorithm", h3.getHashAlgorithm());
         assertNull("Null salt", h3.getSalt());
         assertNull("Null hash", h3.getHash());
-        assertFalse("Match null string?", h3.matches(null));
-        assertFalse("Match non-null string?", h3.matches("not null"));
+        assertFalse("Match null string?", h3.equals(null));
+        assertFalse("Match non-null string?", h3.equals("not null"));
 
         // Test single-argument constructor, which does the hashing.
         String password = "I've got a secret.";
-        h1 = new PasswordHash(password);
+        h1 = new SimplePasswordHash(password);
         assertEquals("SHA-512", h1.getHashAlgorithm());
-        assertFalse("Match against a different string", h1.matches("random rubbish"));
-        assertTrue("Match against the correct string", h1.matches(password));
+        assertFalse("Match against a different string", h1.equals("random rubbish"));
+        assertTrue("Match against the correct string", h1.equals(password));
 
         // Test 3-argument constructor with non-null data.
-        h3 = new PasswordHash(h1.getHashAlgorithm(), h1.getSalt(), h1.getHash());
-        assertTrue("Match a duplicate original made from getter values", h3.matches(password));
+        h3 = new SimplePasswordHash(h1.getHashAlgorithm(), h1.getSalt(), h1.getHash());
+        assertTrue("Match a duplicate original made from getter values", h3.equals(password));
     }
 
     /**
-     * Test of matches method, of class PasswordHash.
+     * Test of equals method, of class SimplePasswordHash.
+     * @throws NoSuchAlgorithmException passed through.
+     * @throws UnsupportedEncodingException passed through.
      */
     @Test
-    public void testMatches()
+    public void testEquals()
         throws NoSuchAlgorithmException, UnsupportedEncodingException {
         System.out.println("matches");
         final String secret = "Clark Kent is Superman";
 
         // Test old 1-trip MD5 hash
         MessageDigest digest = MessageDigest.getInstance("MD5");
-        PasswordHash hash = new PasswordHash(null, null, digest.digest(secret.getBytes(Constants.DEFAULT_ENCODING)));
-        boolean result = hash.matches(secret);
+        SimplePasswordHash hash = new SimplePasswordHash(null, null,
+                digest.digest(secret.getBytes(Constants.DEFAULT_ENCODING)));
+        boolean result = hash.equals(secret);
         assertTrue("Old unsalted 1-trip MD5 hash", result);
 
         // 3-argument form:  see constructor tests
@@ -102,7 +106,7 @@ public class PasswordHashTest extends AbstractDSpaceTest {
     public void testGetHash()
     {
         System.out.println("getHash");
-        PasswordHash instance = null;
+        SimplePasswordHash instance = null;
         byte[] expResult = null;
         byte[] result = instance.getHash();
         assertEquals(expResult, result);
@@ -119,7 +123,7 @@ public class PasswordHashTest extends AbstractDSpaceTest {
     public void testGetSalt()
     {
         System.out.println("getSalt");
-        PasswordHash instance = null;
+        SimplePasswordHash instance = null;
         byte[] expResult = null;
         byte[] result = instance.getSalt();
         assertEquals(expResult, result);
@@ -136,7 +140,7 @@ public class PasswordHashTest extends AbstractDSpaceTest {
     public void testGetAlgorithm()
     {
         System.out.println("getAlgorithm");
-        PasswordHash instance = null;
+        SimplePasswordHash instance = null;
         String expResult = "";
         String result = instance.getAlgorithm();
         assertEquals(expResult, result);

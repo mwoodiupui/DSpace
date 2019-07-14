@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,7 @@ import org.dspace.core.LogManager;
 import org.dspace.core.Utils;
 import org.dspace.eperson.dao.EPersonDAO;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.eperson.service.PasswordHashService;
 import org.dspace.eperson.service.SubscribeService;
 import org.dspace.event.Event;
 import org.dspace.workflow.WorkflowService;
@@ -61,6 +63,8 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     protected ItemService itemService;
     @Autowired(required = true)
     protected SubscribeService subscribeService;
+    @Autowired(required = true)
+    protected PasswordHashService passwordHashService;
 
     protected EPersonServiceImpl() {
         super();
@@ -244,7 +248,9 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
 
     @Override
     public void setPassword(EPerson ePerson, String password) {
-        PasswordHash hash = new PasswordHash(password);
+        PasswordHash hash
+                = passwordHashService.getPasswordHashInstance(null);
+        hash.hash(password);
         ePerson.setDigestAlgorithm(hash.getHashAlgorithm());
         ePerson.setSalt(Utils.toHex(hash.getSalt()));
         ePerson.setPassword(Utils.toHex(hash.getHash()));
@@ -267,9 +273,9 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     public PasswordHash getPasswordHash(EPerson ePerson) {
         PasswordHash hash = null;
         try {
-            hash = new PasswordHash(ePerson.getDigestAlgorithm(),
-                                    ePerson.getSalt(),
-                                    ePerson.getPassword());
+            hash = passwordHashService.getPasswordHashInstance(ePerson.getDigestAlgorithm(),
+                                    Hex.decodeHex(ePerson.getSalt().toCharArray()),
+                                    Hex.decodeHex(ePerson.getPassword().toCharArray()));
         } catch (DecoderException ex) {
             log.error("Problem decoding stored salt or hash:  " + ex.getMessage());
         }
@@ -280,15 +286,14 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     public boolean checkPassword(Context context, EPerson ePerson, String attempt) {
         PasswordHash myHash;
         try {
-            myHash = new PasswordHash(
-                ePerson.getDigestAlgorithm(),
-                ePerson.getSalt(),
-                ePerson.getPassword());
+            myHash = passwordHashService.getPasswordHashInstance(ePerson.getDigestAlgorithm());
+            myHash.setSalt(Hex.decodeHex(ePerson.getSalt().toCharArray()));
+            myHash.setHash(Hex.decodeHex(ePerson.getPassword().toCharArray()));
         } catch (DecoderException ex) {
-            log.error(ex.getMessage());
+            log.error("Failed to build candidate PasswordHash:  {}", ex.getMessage(), ex);
             return false;
         }
-        boolean answer = myHash.matches(attempt);
+        boolean answer = myHash.equals(attempt);
 
         // If using the old unsalted hash, and this password is correct, update to a new hash
         if (answer && (null == ePerson.getDigestAlgorithm())) {
@@ -336,7 +341,7 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
 
     @Override
     public List<String> getDeleteConstraints(Context context, EPerson ePerson) throws SQLException {
-        List<String> tableList = new ArrayList<String>();
+        List<String> tableList = new ArrayList<>();
 
         // check for eperson in item table
         Iterator<Item> itemsBySubmitter = itemService.findBySubmitter(context, ePerson);

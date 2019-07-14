@@ -9,29 +9,58 @@
 package org.dspace.eperson;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.AbstractUnitTest;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Constants;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.eperson.service.PasswordHashService;
+import org.dspace.utils.DSpace;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * @author mwood
  */
 public class EPersonTest extends AbstractUnitTest {
-    protected EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(EPersonTest.class);
+    protected EPersonService ePersonService
+            = EPersonServiceFactory.getInstance().getEPersonService();
 
+    private static final Logger
+            log = LogManager.getLogger(EPersonTest.class);
+
+    private static final String TEST_EMAIL = "kevin@dspace.org";
+
+    private static final String TEST_NETID = "1985";
+
+    private static final String TEST_PASSWORD = "test";
+
+    private static final String TEST_FIRST_NAME = "Kevin";
+
+    private static final String TEST_LAST_NAME = "Van de Velde";
+
+    private static PasswordHashService passwordHashService;
 
     public EPersonTest() {
+    }
+
+    /**
+     * Initialize services.
+     */
+    @BeforeClass
+    public static void setup() {
+        passwordHashService = new DSpace()
+                .getServiceManager()
+                .getServiceByName(null, PasswordHashService.class);
     }
 
     /**
@@ -48,12 +77,18 @@ public class EPersonTest extends AbstractUnitTest {
 
         context.turnOffAuthorisationSystem();
         try {
+            PasswordHash passwordHash = passwordHashService.getPasswordHashInstance(
+                    null);
+            passwordHash.hash(TEST_PASSWORD);
+
             EPerson eperson = ePersonService.create(context);
-            eperson.setEmail("kevin@dspace.org");
-            eperson.setFirstName(context, "Kevin");
-            eperson.setLastName(context, "Van de Velde");
-            eperson.setNetid("1985");
-            eperson.setPassword("test");
+            eperson.setEmail(TEST_EMAIL);
+            eperson.setFirstName(context, TEST_FIRST_NAME);
+            eperson.setLastName(context, TEST_LAST_NAME);
+            eperson.setNetid(TEST_NETID);
+            eperson.setPassword(passwordHash.getHashString());
+            eperson.setSalt(passwordHash.getSaltString());
+            eperson.setDigestAlgorithm(passwordHash.getHashAlgorithm());
             ePersonService.update(context, eperson);
         } catch (SQLException | AuthorizeException ex) {
             log.error("Error in init", ex);
@@ -67,7 +102,7 @@ public class EPersonTest extends AbstractUnitTest {
     public void destroy() {
         context.turnOffAuthorisationSystem();
         try {
-            EPerson testPerson = ePersonService.findByEmail(context, "kevin@dspace.org");
+            EPerson testPerson = ePersonService.findByEmail(context, TEST_EMAIL);
             if (testPerson != null) {
                 ePersonService.delete(context, testPerson);
             }
@@ -684,12 +719,16 @@ public class EPersonTest extends AbstractUnitTest {
 
     /**
      * Test of checkPassword method, of class EPerson.
+     * @throws java.sql.SQLException passed through.
+     * @throws org.apache.commons.codec.DecoderException passed through.
      */
     @Test
     public void testCheckPassword()
         throws SQLException, DecoderException {
-        EPerson eperson = ePersonService.findByEmail(context, "kevin@dspace.org");
-        ePersonService.checkPassword(context, eperson, "test");
+        System.out.println("checkPassword");
+        EPerson foundEperson = ePersonService.findByEmail(context, TEST_EMAIL);
+        assertTrue("Password should validate",
+                ePersonService.checkPassword(context, foundEperson, TEST_PASSWORD));
     }
 
     /**

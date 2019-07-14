@@ -10,6 +10,7 @@ package org.dspace.eperson.factory;
 import org.dspace.eperson.service.AccountService;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.eperson.service.PasswordHashService;
 import org.dspace.eperson.service.RegistrationDataService;
 import org.dspace.eperson.service.SubscribeService;
 import org.dspace.eperson.service.SupervisorService;
@@ -35,6 +36,8 @@ public class EPersonServiceFactoryImpl extends EPersonServiceFactory {
     private SubscribeService subscribeService;
     @Autowired(required = true)
     private SupervisorService supervisorService;
+    @Autowired(required = true)
+    private PasswordHashService passwordHashService;
 
     @Override
     public EPersonService getEPersonService() {
@@ -64,5 +67,10 @@ public class EPersonServiceFactoryImpl extends EPersonServiceFactory {
     @Override
     public SupervisorService getSupervisorService() {
         return supervisorService;
+    }
+
+    @Override
+    public PasswordHashService getPasswordHashService() {
+        return passwordHashService;
     }
 }
