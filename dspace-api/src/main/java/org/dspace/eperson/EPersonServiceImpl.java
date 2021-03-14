@@ -263,6 +263,7 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
      * @throws SQLException
      * @throws AuthorizeException
      * @throws IOException
+     * @throws EPersonDeletionException if there are constraints and {@code cascade} is false.
      */
     public void delete(Context context, EPerson ePerson, boolean cascade)
             throws SQLException, AuthorizeException, IOException, EPersonDeletionException {

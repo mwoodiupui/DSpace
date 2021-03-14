@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.service.AuthorizeService;
@@ -41,7 +42,7 @@ public class MetadataFieldServiceImpl implements MetadataFieldService {
     /**
      * log4j logger
      */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(MetadataFieldServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired(required = true)
     protected MetadataFieldDAO metadataFieldDAO;

@@ -10,9 +10,9 @@ package org.dspace.app.rest.security;
 import java.io.Serializable;
 import java.sql.SQLException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.ResourcePolicyRest;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.service.AuthorizeService;

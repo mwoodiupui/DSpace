@@ -145,7 +145,7 @@ public class SolrServiceResourceRestrictionPlugin implements SolrServiceIndexPlu
                 if (anonymousGroup != null) {
                     anonGroupId = anonymousGroup.getID().toString();
                 }
-                resourceQuery.append("read:(g" + anonGroupId);
+                resourceQuery.append("read:(g").append(anonGroupId);
                 EPerson currentUser = context.getCurrentUser();
                 if (currentUser != null) {
                     resourceQuery.append(" OR e").append(currentUser.getID());

@@ -27,6 +27,8 @@
  * <h2>Crosswalk Implementations</h2>
  * <p>Crosswalks exist for many formats, including DC, QDC, METs, MODs, Premis,
  * and a general implementation employing an XSLT stylesheet.<p>
+ *
+ * @author Richard Rodgers
  */
 
 package org.dspace.content.crosswalk;

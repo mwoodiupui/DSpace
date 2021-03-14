@@ -73,6 +73,15 @@ public class OpenSearchController {
     /**
      * This method provides the OpenSearch query on the path /search
      * It will pass the result as a OpenSearchDocument directly to the client
+     * @param request from the client.
+     * @param response to the client.
+     * @param query the client's search query.
+     * @param start result window starts here.
+     * @param count result window contains up to this many results.
+     * @param format client's requested response format.
+     * @param model not used.
+     * @throws java.io.IOException passed through.
+     * @throws javax.servlet.ServletException if the response could not be formatted.
      */
     @GetMapping("/search")
     public void search(HttpServletRequest request,
@@ -164,6 +173,9 @@ public class OpenSearchController {
     /**
      * This method provides the OpenSearch servicedescription document on the path /service
      * It will pass the result as a OpenSearchDocument directly to the client
+     * @param request from the client.
+     * @param response for the client.
+     * @throws java.io.IOException passed through.
      */
     @GetMapping("/service")
     public void service(HttpServletRequest request,
@@ -194,7 +206,7 @@ public class OpenSearchController {
      */
     private void init() {
         if (searchIndices == null) {
-            searchIndices = new ArrayList<String>();
+            searchIndices = new ArrayList<>();
             DiscoveryConfiguration discoveryConfiguration = SearchUtils
                     .getDiscoveryConfiguration();
             searchIndices.add("any");
@@ -217,7 +229,7 @@ public class OpenSearchController {
      */
     private Map<String, String> getLabels(HttpServletRequest request) {
         // TODO: get strings from translation file or configuration
-        Map<String, String> labelMap = new HashMap<String, String>();
+        Map<String, String> labelMap = new HashMap<>();
         labelMap.put(SyndicationFeed.MSG_UNTITLED, "notitle");
         labelMap.put(SyndicationFeed.MSG_LOGO_TITLE, "logo.title");
         labelMap.put(SyndicationFeed.MSG_FEED_DESCRIPTION, "general-feed.description");
