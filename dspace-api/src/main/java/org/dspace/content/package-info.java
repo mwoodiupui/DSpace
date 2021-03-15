@@ -1,4 +1,11 @@
 /**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+/**
  * Provides an API for reading and manipulating content in the DSpace system.
  *
  * <h2>The DSpace Data Model</h2>

@@ -1,4 +1,11 @@
 /**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+/**
  * Provides an API and implementations of metadata crosswalks, which are
  * directional mappings from one schema to another, performed in the context of
  * Item ingestion or dissemination. Most crosswalks are driven by a mapping
