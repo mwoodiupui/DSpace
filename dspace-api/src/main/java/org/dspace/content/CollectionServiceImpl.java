@@ -393,7 +393,7 @@ public class CollectionServiceImpl extends DSpaceObjectServiceImpl<Collection> i
         try {
             workflow = workflowFactory.getWorkflow(collection);
         } catch (WorkflowConfigurationException e) {
-            log.error(LogManager.getHeader(context, "setWorkflowGroup",
+            log.error(LogHelper.getHeader(context, "setWorkflowGroup",
                     "collection_id=" + collection.getID() + " " + e.getMessage()), e);
         }
         if (!StringUtils.equals(workflowFactory.getDefaultWorkflow().getID(), workflow.getID())) {
@@ -944,7 +944,7 @@ public class CollectionServiceImpl extends DSpaceObjectServiceImpl<Collection> i
      * Finds all Indexed Collections where the current user has submit rights. If the user is an Admin,
      * this is all Indexed Collections. Otherwise, it includes those collections where
      * an indexed "submit" policy lists either the eperson or one of the eperson's groups
-     * 
+     *
      * @param context                    DSpace context
      * @param discoverQuery
      * @param community                  parent community, could be null
