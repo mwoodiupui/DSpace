@@ -27,6 +27,7 @@ import org.dspace.content.service.RelationshipTypeService;
 import org.dspace.content.virtual.VirtualMetadataPopulator;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.core.LogHelper;
 import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -266,6 +267,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return StringUtils.equals(leftEntityType, entityTypeToProcess.getLabel());
     }
 
+    @Override
     public Relationship find(Context context, int id) throws SQLException {
         Relationship relationship = relationshipDAO.findByID(context, Relationship.class, id);
         return relationship;
@@ -340,10 +342,10 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public void delete(Context context, Relationship relationship, boolean copyToLeftItem, boolean copyToRightItem)
         throws SQLException, AuthorizeException {
-        log.info(org.dspace.core.LogManager.getHeader(context, "delete_relationship",
-                                                      "relationship_id=" + relationship.getID() + "&" +
-                                                          "copyMetadataValuesToLeftItem=" + copyToLeftItem + "&" +
-                                                          "copyMetadataValuesToRightItem=" + copyToRightItem));
+        log.info(LogHelper.getHeader(context, "delete_relationship",
+                "relationship_id=" + relationship.getID() + "&" +
+                        "copyMetadataValuesToLeftItem=" + copyToLeftItem + "&" +
+                        "copyMetadataValuesToRightItem=" + copyToRightItem));
         if (isRelationshipValidToDelete(context, relationship) &&
             copyToItemPermissionCheck(context, relationship, copyToLeftItem, copyToRightItem)) {
             // To delete a relationship, a user must have WRITE permissions on one of the related Items
@@ -357,10 +359,10 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public void forceDelete(Context context, Relationship relationship, boolean copyToLeftItem, boolean copyToRightItem)
         throws SQLException, AuthorizeException {
-        log.info(org.dspace.core.LogManager.getHeader(context, "delete_relationship",
-                                                      "relationship_id=" + relationship.getID() + "&" +
-                                                          "copyMetadataValuesToLeftItem=" + copyToLeftItem + "&" +
-                                                          "copyMetadataValuesToRightItem=" + copyToRightItem));
+        log.info(org.dspace.core.LogHelper.getHeader(context, "delete_relationship",
+                "relationship_id=" + relationship.getID() + "&" +
+                        "copyMetadataValuesToLeftItem=" + copyToLeftItem + "&" +
+                        "copyMetadataValuesToRightItem=" + copyToRightItem));
         if (copyToItemPermissionCheck(context, relationship, copyToLeftItem, copyToRightItem)) {
             // To delete a relationship, a user must have WRITE permissions on one of the related Items
             deleteRelationshipAndCopyToItem(context, relationship, copyToLeftItem, copyToRightItem);

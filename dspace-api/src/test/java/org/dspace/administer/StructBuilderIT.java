@@ -21,6 +21,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.AbstractIntegrationTest;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
@@ -34,8 +36,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -53,7 +53,7 @@ import org.xmlunit.diff.Difference;
  */
 public class StructBuilderIT
         extends AbstractIntegrationTest {
-    private static final Logger log = LoggerFactory.getLogger(StructBuilderIT.class);
+    private static final Logger log = LogManager.getLogger();
 
     private static final CommunityService communityService
             = ContentServiceFactory.getInstance().getCommunityService();

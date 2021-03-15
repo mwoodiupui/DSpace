@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.service.AuthorizeService;
@@ -41,7 +42,7 @@ import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.scripts.service.ProcessService;
@@ -52,7 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ProcessServiceImpl implements ProcessService {
 
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ProcessService.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     private ProcessDAO processDAO;
@@ -82,7 +83,7 @@ public class ProcessServiceImpl implements ProcessService {
         process.setParameters(DSpaceCommandLineParameter.concatenate(parameters));
         process.setCreationTime(new Date());
         Process createdProcess = processDAO.create(context, process);
-        log.info(LogManager.getHeader(context, "process_create",
+        log.info(LogHelper.getHeader(context, "process_create",
                                       "Process has been created for eperson with email " + ePerson.getEmail()
                                           + " with ID " + createdProcess.getID() + " and scriptName " +
                                           scriptName + " and parameters " + parameters));
@@ -124,7 +125,7 @@ public class ProcessServiceImpl implements ProcessService {
         process.setProcessStatus(ProcessStatus.RUNNING);
         process.setStartTime(new Date());
         update(context, process);
-        log.info(LogManager.getHeader(context, "process_start", "Process with ID " + process.getID()
+        log.info(LogHelper.getHeader(context, "process_start", "Process with ID " + process.getID()
             + " and name " + process.getName() + " has started"));
 
     }
@@ -134,7 +135,7 @@ public class ProcessServiceImpl implements ProcessService {
         process.setProcessStatus(ProcessStatus.FAILED);
         process.setFinishedTime(new Date());
         update(context, process);
-        log.info(LogManager.getHeader(context, "process_fail", "Process with ID " + process.getID()
+        log.info(LogHelper.getHeader(context, "process_fail", "Process with ID " + process.getID()
             + " and name " + process.getName() + " has failed"));
 
     }
@@ -144,7 +145,7 @@ public class ProcessServiceImpl implements ProcessService {
         process.setProcessStatus(ProcessStatus.COMPLETED);
         process.setFinishedTime(new Date());
         update(context, process);
-        log.info(LogManager.getHeader(context, "process_complete", "Process with ID " + process.getID()
+        log.info(LogHelper.getHeader(context, "process_complete", "Process with ID " + process.getID()
             + " and name " + process.getName() + " has been completed"));
 
     }
@@ -177,7 +178,7 @@ public class ProcessServiceImpl implements ProcessService {
             bitstreamService.delete(context, bitstream);
         }
         processDAO.delete(context, process);
-        log.info(LogManager.getHeader(context, "process_delete", "Process with ID " + process.getID()
+        log.info(LogHelper.getHeader(context, "process_delete", "Process with ID " + process.getID()
             + " and name " + process.getName() + " has been deleted"));
     }
 
@@ -237,6 +238,7 @@ public class ProcessServiceImpl implements ProcessService {
         return process.getBitstreams();
     }
 
+    @Override
     public int countTotal(Context context) throws SQLException {
         return processDAO.countRows(context);
     }

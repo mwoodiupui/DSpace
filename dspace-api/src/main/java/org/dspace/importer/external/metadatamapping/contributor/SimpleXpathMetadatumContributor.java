@@ -17,12 +17,12 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.importer.external.metadatamapping.MetadataFieldConfig;
 import org.dspace.importer.external.metadatamapping.MetadataFieldMapping;
 import org.dspace.importer.external.metadatamapping.MetadatumDTO;
 import org.jaxen.JaxenException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SimpleXpathMetadatumContributor implements MetadataContributor<OMElement> {
     private MetadataFieldConfig field;
 
-    private static final Logger log = LoggerFactory.getLogger(SimpleXpathMetadatumContributor.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * Return prefixToNamespaceMapping

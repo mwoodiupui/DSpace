@@ -12,6 +12,8 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.ConverterService;
 import org.dspace.app.rest.converter.EPersonConverter;
 import org.dspace.app.rest.link.HalLinkService;
@@ -28,8 +30,6 @@ import org.dspace.app.rest.security.RestAuthenticationService;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.core.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenticationRestController implements InitializingBean {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationRestController.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     DiscoverableEndpointsService discoverableEndpointsService;

@@ -10,8 +10,8 @@ package org.dspace.curate;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Write curation report records through the logging framework.
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LogReporter
         implements Reporter {
-    private static final Logger LOG = LoggerFactory.getLogger("curation");
+    private static final Logger LOG = LogManager.getLogger("curation");
     private final StringBuilder buffer = new StringBuilder();
 
     @Override

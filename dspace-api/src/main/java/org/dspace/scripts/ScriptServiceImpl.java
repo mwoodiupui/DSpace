@@ -11,19 +11,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.Context;
 import org.dspace.kernel.ServiceManager;
 import org.dspace.scripts.configuration.ScriptConfiguration;
 import org.dspace.scripts.service.ScriptService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The implementation for the {@link ScriptService}
  */
 public class ScriptServiceImpl implements ScriptService {
-    private static final Logger log = LoggerFactory.getLogger(ScriptServiceImpl.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     private ServiceManager serviceManager;

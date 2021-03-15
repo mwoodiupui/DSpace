@@ -13,11 +13,11 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.AuthnRest;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ShibbolethRestController implements InitializingBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ShibbolethRestController.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     ConfigurationService configurationService;
@@ -63,7 +63,7 @@ public class ShibbolethRestController implements InitializingBean {
         // Validate that the redirectURL matches either the server or UI hostname. It *cannot* be an arbitrary URL.
         String redirectHostName = Utils.getHostName(redirectUrl);
         String serverHostName = Utils.getHostName(configurationService.getProperty("dspace.server.url"));
-        ArrayList<String> allowedHostNames = new ArrayList<String>();
+        ArrayList<String> allowedHostNames = new ArrayList<>();
         allowedHostNames.add(serverHostName);
         String[] allowedUrls = configurationService.getArrayProperty("rest.cors.allowed-origins");
         for (String url : allowedUrls) {

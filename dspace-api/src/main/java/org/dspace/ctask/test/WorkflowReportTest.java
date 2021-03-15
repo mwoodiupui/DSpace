@@ -10,11 +10,11 @@ package org.dspace.ctask.test;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.content.DSpaceObject;
 import org.dspace.curate.AbstractCurationTask;
 import org.dspace.curate.Curator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Curation task which simply reports its invocation without changing anything.
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WorkflowReportTest
         extends AbstractCurationTask {
-    private static final Logger LOG = LoggerFactory.getLogger(WorkflowReportTest.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public int perform(DSpaceObject dso)

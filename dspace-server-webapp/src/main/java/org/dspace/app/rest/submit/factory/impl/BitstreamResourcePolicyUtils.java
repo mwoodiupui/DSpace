@@ -12,23 +12,23 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.UploadBitstreamAccessConditionDTO;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
 import org.dspace.core.Context;
 import org.dspace.submit.model.AccessConditionOption;
 import org.dspace.submit.model.UploadConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Utility class to reuse methods related to bitstream resource-policies
- * These methods are applicable in the submission when adding or editing bitstreams, and the resource policies
- * have to be applied
+ * Utility class to reuse methods related to bitstream resource-policies.
+ * These methods are applicable in the submission when adding or editing
+ * bitstreams, and the resource policies have to be applied.
  */
 public class BitstreamResourcePolicyUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(BitstreamResourcePolicyUtils.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * Default constructor
@@ -45,6 +45,7 @@ public class BitstreamResourcePolicyUtils {
      * @param newAccessCondition    The access condition containing the details for the desired policies
      * @throws SQLException         If a database error occurs
      * @throws AuthorizeException   If the user is not authorized
+     * @throws ParseException       passed through
      */
     public static void findApplyResourcePolicy(Context context, Iterator<UploadConfiguration> uploadConfigs,
                                          Bitstream b, UploadBitstreamAccessConditionDTO newAccessCondition)
@@ -59,7 +60,7 @@ public class BitstreamResourcePolicyUtils {
     }
 
     /**
-     * Based on the given name, find the resource policy to apply on the given bitstream
+     * Based on the given name, find the resource policy to apply on the given bitstream.
      * This function applies the resource policies.
      * The description, start date and end date are applied as well
      *
@@ -72,6 +73,7 @@ public class BitstreamResourcePolicyUtils {
      * @param endDate               An optional end date for the policies
      * @throws SQLException         If a database error occurs
      * @throws AuthorizeException   If the user is not authorized
+     * @throws ParseException       passed through
      */
     public static void findApplyResourcePolicy(Context context, Iterator<UploadConfiguration> uploadConfigs,
                                                Bitstream b, String name, String description,

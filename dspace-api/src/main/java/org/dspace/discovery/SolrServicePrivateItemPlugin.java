@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SolrServicePrivateItemPlugin implements SolrServiceSearchPlugin {
 
-    private static final Logger log = getLogger(SolrServicePrivateItemPlugin.class.getSimpleName());
+    private static final Logger log = getLogger();
 
     @Autowired(required = true)
     protected AuthorizeService authorizeService;
@@ -42,7 +42,7 @@ public class SolrServicePrivateItemPlugin implements SolrServiceSearchPlugin {
                 solrQuery.addFilterQuery("NOT(discoverable:false)");
             }
         } catch (SQLException ex) {
-            log.error(LogManager.getHeader(context, "Error looking up authorization rights of current user",
+            log.error(LogHelper.getHeader(context, "Error looking up authorization rights of current user",
                 ""), ex);
         }
     }

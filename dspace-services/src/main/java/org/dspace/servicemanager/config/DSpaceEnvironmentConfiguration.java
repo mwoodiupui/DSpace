@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.configuration2.MapConfiguration;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Bash does not allow environment variables that contain dots in their name.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DSpaceEnvironmentConfiguration extends MapConfiguration {
 
-    private static Logger log = LoggerFactory.getLogger(DSpaceEnvironmentConfiguration.class);
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * Create a Configuration based on the environment variables.

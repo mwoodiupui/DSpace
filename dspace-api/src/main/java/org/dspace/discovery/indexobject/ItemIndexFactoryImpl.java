@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
@@ -41,7 +42,7 @@ import org.dspace.content.authority.service.MetadataAuthorityService;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.discovery.FullTextContentStreams;
 import org.dspace.discovery.IndexableObject;
 import org.dspace.discovery.SearchUtils;
@@ -75,7 +76,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<IndexableItem, Item>
         implements ItemIndexFactory {
 
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ItemIndexFactoryImpl.class);
+    private static final Logger log = LogManager.getLogger();
     public static final String VARIANTS_STORE_SEPARATOR = "###";
     public static final String STORE_SEPARATOR = "\n|||\n";
 
@@ -592,7 +593,7 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
                 }
                 if (toProjectionFields.contains(field) || toProjectionFields
                         .contains(unqualifiedField + "." + Item.ANY)) {
-                    StringBuffer variantsToStore = new StringBuffer();
+                    StringBuilder variantsToStore = new StringBuilder();
                     if (variants != null) {
                         for (String var : variants) {
                             variantsToStore.append(VARIANTS_STORE_SEPARATOR);
@@ -618,7 +619,7 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
             }
 
         } catch (Exception e) {
-            log.error(LogManager.getHeader(context, "item_metadata_discovery_error",
+            log.error(LogHelper.getHeader(context, "item_metadata_discovery_error",
                     "Item identifier: " + item.getID()), e);
         }
 
@@ -641,7 +642,7 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
             }
 
         } catch (Exception e) {
-            log.error(LogManager.getHeader(context, "item_publication_group_discovery_error",
+            log.error(LogHelper.getHeader(context, "item_publication_group_discovery_error",
                     "Item identifier: " + item.getID()), e);
         }
 

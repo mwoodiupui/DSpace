@@ -19,9 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.FastHttpDateFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.http.HttpHeaders;
  */
 public class HttpHeadersInitializer {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Logger log = LogManager.getLogger();
 
     private static final String METHOD_HEAD = "HEAD";
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
@@ -64,7 +64,7 @@ public class HttpHeadersInitializer {
     //no-cache so request is always performed for logging
     private static final String CACHE_CONTROL_SETTING = "private,no-cache";
 
-    private BufferedInputStream inputStream;
+    private final BufferedInputStream inputStream;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private String contentType;

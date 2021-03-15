@@ -10,6 +10,7 @@ package org.dspace.discovery;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.dspace.authorize.ResourcePolicy;
@@ -19,19 +20,18 @@ import org.dspace.content.Community;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.LogManager;
+import org.dspace.core.LogHelper;
 import org.dspace.discovery.indexobject.IndexableCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The purpose of this plugin is to index all ADD type resource policies related to collections.
- * 
+ *
  * @author Mykhaylo Boychuk (at 4science.it)
  */
 public class SolrServiceIndexCollectionSubmittersPlugin implements SolrServiceIndexPlugin {
 
-    private static final Logger log = org.apache.logging.log4j.LogManager
-                                                .getLogger(SolrServiceIndexCollectionSubmittersPlugin.class);
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired(required = true)
     protected AuthorizeService authorizeService;
@@ -66,7 +66,7 @@ public class SolrServiceIndexCollectionSubmittersPlugin implements SolrServiceIn
                         context.uncacheEntity(resourcePolicy);
                     }
                 } catch (SQLException e) {
-                    log.error(LogManager.getHeader(context, "Error while indexing resource policies",
+                    log.error(LogHelper.getHeader(context, "Error while indexing resource policies",
                              "Collection: (id " + col.getID() + " type " + col.getName() + ")" ));
                 }
             }
