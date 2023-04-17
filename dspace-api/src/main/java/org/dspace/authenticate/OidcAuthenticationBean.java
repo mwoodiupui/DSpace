@@ -16,6 +16,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +25,16 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.authenticate.oidc.OidcClient;
 import org.dspace.authenticate.oidc.model.OidcTokenResponseDTO;
 import org.dspace.core.Context;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +69,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Autowired
     private EPersonService ePersonService;
 
+    @Autowired
+    private GroupService groupService;
+
     @Override
     public boolean allowSetPassword(Context context, HttpServletRequest request, String username) throws SQLException {
         return false;
@@ -84,8 +92,36 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     }
 
     @Override
-    public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return List.of();
+    public List<Group> getSpecialGroups(Context context, HttpServletRequest request)
+        throws SQLException {
+        if (request == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Group> groups = new ArrayList<>();
+        StringBuilder groupIDs = new StringBuilder();
+        for (String name : configurationService.getArrayProperty(
+                "authentication-oidc.login.specialgroup",
+                ArrayUtils.EMPTY_STRING_ARRAY)) {
+            Group group = groupService.findByName(context, name);
+            if (null != group) {
+                groups.add(group);
+                if (groupIDs.length() > 0) {
+                    groupIDs.append(", ");
+                }
+                groupIDs.append(group.getID());
+            } else {
+                LOGGER.warn(LogHelper.getHeader(context, "authenticated",
+                        "Unknown special group {} not granted"), name);
+            }
+        }
+
+        if (groupIDs.length() > 0) {
+            LOGGER.debug(LogHelper.getHeader(context, "authenticated",
+                    "special_groups={}"), groupIDs.toString());
+        }
+
+        return groups;
     }
 
     @Override
