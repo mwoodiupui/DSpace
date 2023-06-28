@@ -14,10 +14,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
            http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-2.5.xsd"
-       default-autowire-candidates="*Service,*DAO,javax.sql.DataSource">
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <context:annotation-config/> <!-- allows us to use spring annotations in beans -->
+    <context:annotation-config/>
 
     <bean class="org.dspace.discovery.SolrServiceImpl"
           id="org.dspace.discovery.SearchService"/>

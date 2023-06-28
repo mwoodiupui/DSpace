@@ -15,11 +15,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
            http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	   http://www.springframework.org/schema/util
+	   http://www.springframework.org/schema/util/spring-util.xsd"
 >
-    <!--   default-autowire-candidates="*Service,*DAO,javax.sql.DataSource"> -->
 
-    <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
+    <context:annotation-config />
+
     <bean id="always_true_filter" scope="singleton" class="org.dspace.content.logic.TrueFilter"/>
 
     <!-- DEFINE CONDITIONS

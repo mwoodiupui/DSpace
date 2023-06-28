@@ -5,11 +5,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
            http://www.springframework.org/schema/context
-           http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
-       default-autowire-candidates="*Service,*DAO,javax.sql.DataSource">
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	   http://www.springframework.org/schema/util
+	   http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config/>
-    <!-- allows us to use spring annotations in beans -->
 
     <util:map id="endnoteMetadataFieldMap" key-type="org.dspace.importer.external.metadatamapping.MetadataFieldConfig"
               value-type="org.dspace.importer.external.metadatamapping.contributor.MetadataContributor">
@@ -20,8 +20,8 @@
         <entry key-ref="dcTitle" value-ref="endnoteTitleContrib" />
         <entry key-ref="dcAuthors" value-ref="endnoteAuthorsContrib" />
         <entry key-ref="dcAbstract" value-ref="endnoteAbstractContrib" />
-		<entry key-ref="dcIssued" value-ref="endnoteIssuedContrib" />
-		<entry key-ref="dcJournal" value-ref="endnoteJournalContrib" />    
+        <entry key-ref="dcIssued" value-ref="endnoteIssuedContrib" />
+        <entry key-ref="dcJournal" value-ref="endnoteJournalContrib" />    
     </util:map>
 
     <bean id="endnoteJournalContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
