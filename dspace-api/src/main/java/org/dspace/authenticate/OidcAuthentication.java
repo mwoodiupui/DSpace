@@ -25,7 +25,7 @@ import org.dspace.utils.DSpace;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  *
  */
-public class OidcAuthentication implements AuthenticationMethod {
+public class OidcAuthentication extends AuthenticationMethod {
 
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
 

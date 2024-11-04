@@ -27,7 +27,7 @@ import org.dspace.utils.DSpace;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  *
  */
-public class OrcidAuthentication implements AuthenticationMethod {
+public class OrcidAuthentication extends AuthenticationMethod {
 
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
 
@@ -69,11 +69,6 @@ public class OrcidAuthentication implements AuthenticationMethod {
     @Override
     public boolean isImplicit() {
         return getOrcidAuthentication().isImplicit();
-    }
-
-    @Override
-    public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return getOrcidAuthentication().getSpecialGroups(context, request);
     }
 
     @Override

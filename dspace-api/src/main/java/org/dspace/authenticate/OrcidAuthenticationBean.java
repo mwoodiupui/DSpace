@@ -49,7 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  *
  */
-public class OrcidAuthenticationBean implements AuthenticationMethod {
+public class OrcidAuthenticationBean extends AuthenticationMethod {
 
     public static final String ORCID_AUTH_ATTRIBUTE = "orcid-authentication";
 
@@ -146,11 +146,6 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
     @Override
     public boolean isImplicit() {
         return false;
-    }
-
-    @Override
-    public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return Collections.emptyList();
     }
 
     @Override

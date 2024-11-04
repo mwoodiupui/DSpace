@@ -12,9 +12,17 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.Collections;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.Context;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
+import org.dspace.eperson.factory.EPersonServiceFactory;
+import org.dspace.services.factory.DSpaceServicesFactory;
 
 
 /**
@@ -34,10 +42,11 @@ import org.dspace.eperson.Group;
  * appropriate for it.  The next method in the stack is then called.
  *
  * @author Larry Stone
- * @version $Revision$
  * @see org.dspace.authenticate.service.AuthenticationService
  */
-public interface AuthenticationMethod {
+public abstract class AuthenticationMethod {
+    /** Log category */
+    private static final Logger log = LogManager.getLogger();
 
     /**
      * Symbolic return values for authenticate() method:
@@ -49,7 +58,7 @@ public interface AuthenticationMethod {
     public static final int SUCCESS = 1;
 
     /**
-     * User exists, but credentials (<em>e.g.</em> passwd) don't match.
+     * User exists, but credentials (<em>e.g.</em> password) don't match.
      */
     public static final int BAD_CREDENTIALS = 2;
 
@@ -82,7 +91,7 @@ public interface AuthenticationMethod {
      * @return true if new ePerson should be created.
      * @throws SQLException if database error
      */
-    public boolean canSelfRegister(Context context,
+    abstract public boolean canSelfRegister(Context context,
                                    HttpServletRequest request,
                                    String username)
         throws SQLException;
@@ -98,7 +107,7 @@ public interface AuthenticationMethod {
      *                registration form will have been filled out.
      * @throws SQLException if database error
      */
-    public void initEPerson(Context context,
+    abstract public void initEPerson(Context context,
                             HttpServletRequest request,
                             EPerson eperson)
         throws SQLException;
@@ -115,7 +124,7 @@ public interface AuthenticationMethod {
      * @return true if this method allows user to change ePerson password.
      * @throws SQLException if database error
      */
-    public boolean allowSetPassword(Context context,
+    abstract public boolean allowSetPassword(Context context,
                                     HttpServletRequest request,
                                     String username)
         throws SQLException;
@@ -129,7 +138,7 @@ public interface AuthenticationMethod {
      *
      * @return true if this method uses implicit authentication.
      */
-    public boolean isImplicit();
+    abstract public boolean isImplicit();
 
     /**
      * Get list of extra groups that user implicitly belongs to. Note that this
@@ -151,7 +160,37 @@ public interface AuthenticationMethod {
      * @throws SQLException if database error
      */
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request)
-        throws SQLException;
+        throws SQLException {
+        // Prevents anonymous users from being added to this group, and the second check
+        // ensures they are password users
+        try {
+            if (context.getCurrentUser() != null
+                && StringUtils.isNotBlank(
+                EPersonServiceFactory.getInstance().getEPersonService().getPasswordHash(context.getCurrentUser())
+                                     .toString())) {
+                String groupName = DSpaceServicesFactory.getInstance()
+                        .getConfigurationService()
+                        .getProperty("authentication-" + getName() + ".login.specialgroup");
+                if ((groupName != null) && !groupName.trim().isEmpty()) {
+                    Group specialGroup = EPersonServiceFactory.getInstance().getGroupService()
+                                                              .findByName(context, groupName);
+                    if (specialGroup == null) {
+                        // Oops - the group isn't there.
+                        log.warn(LogHelper.getHeader(context,
+                                                      getName() + "_specialgroup",
+                                                      "Group defined in modules/authentication-password.cfg login" +
+                                                          ".specialgroup does not exist"));
+                        return Collections.EMPTY_LIST;
+                    } else {
+                        return Arrays.asList(specialGroup);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error(LogHelper.getHeader(context, "getSpecialGroups", ""), e);
+        }
+        return Collections.EMPTY_LIST;
+    }
 
     /**
      * Returns true if the special groups returned by
@@ -165,7 +204,7 @@ public interface AuthenticationMethod {
      * @return         true is the special groups must be considered, false
      *                 otherwise
      */
-    public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
+    public boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
         return getName().equals(context.getAuthenticationMethod());
     }
 
@@ -193,8 +232,7 @@ public interface AuthenticationMethod {
      * <br>BAD_ARGS        - user/pw not appropriate for this method
      * @throws SQLException if database error
      */
-
-    public int authenticate(Context context,
+    abstract public int authenticate(Context context,
                             String username,
                             String password,
                             String realm,
@@ -223,15 +261,18 @@ public interface AuthenticationMethod {
      *
      * @return fully-qualified URL or null
      */
-    public String loginPageURL(Context context,
+    abstract public String loginPageURL(Context context,
                                HttpServletRequest request,
                                HttpServletResponse response);
 
     /**
-     * Returns a short name that uniquely identifies this authentication method
+     * Returns a short name that uniquely identifies this authentication method.
+     * This should be the method-specific part of the method's configuration
+     * properties, such as "foo" in {@code authentication-foo.specialGroup}.
+     *
      * @return The authentication method name
      */
-    public String getName();
+    abstract public String getName();
 
     /**
      * Get whether the authentication method is being used.
@@ -239,7 +280,7 @@ public interface AuthenticationMethod {
      * @param request   The current request
      * @return whether the authentication method is being used.
      */
-    public boolean isUsed(Context context, HttpServletRequest request);
+    abstract public boolean isUsed(Context context, HttpServletRequest request);
 
     /**
      * Check if the given current password is valid to change the password of the
@@ -250,5 +291,5 @@ public interface AuthenticationMethod {
      * @return                 true if the provided password matches with current
      *                         password
      */
-    public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword);
+    abstract public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword);
 }

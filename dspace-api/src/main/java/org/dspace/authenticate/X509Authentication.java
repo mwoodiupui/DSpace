@@ -98,14 +98,13 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * acceptable but there is no corresponding EPerson.
  *
  * @author Larry Stone
- * @version $Revision$
  */
-public class X509Authentication implements AuthenticationMethod {
+public class X509Authentication extends AuthenticationMethod {
 
     /**
      * log4j category
      */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(X509Authentication.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
     /**
      * public key of CA to check client certs against.
@@ -388,10 +387,10 @@ public class X509Authentication implements AuthenticationMethod {
      * @return List<String> of special groups configured for this authenticator
      */
     private List<String> getX509Groups() {
-        List<String> groupNames = new ArrayList<String>();
+        List<String> groupNames = new ArrayList<>();
 
         String[] groups = configurationService
-            .getArrayProperty("authentication-x509.groups");
+            .getArrayProperty("authentication-" + getName() + ".groups");
 
         if (ArrayUtils.isNotEmpty(groups)) {
             for (String group : groups) {

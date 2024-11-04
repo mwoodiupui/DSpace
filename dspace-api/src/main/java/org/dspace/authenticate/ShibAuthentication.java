@@ -69,7 +69,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @author <a href="mailto:kli@melcoe.mq.edu.au">Xiang Kevin Li, MELCOE</a>
  * @author <a href="http://www.scottphillips.com">Scott Phillips</a>
  */
-public class ShibAuthentication implements AuthenticationMethod {
+public class ShibAuthentication extends AuthenticationMethod {
     /**
      * log4j category
      */
@@ -293,7 +293,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
 
-            if (context.getSpecialGroups().size() > 0 ) {
+            if (!context.getSpecialGroups().isEmpty() ) {
                 log.debug("Returning cached special groups.");
                 return context.getSpecialGroups();
             }

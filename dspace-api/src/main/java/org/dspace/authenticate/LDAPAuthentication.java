@@ -69,10 +69,10 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @author Ivan Masár
  * @author Michael Plate
  */
-public class LDAPAuthentication implements AuthenticationMethod {
+public class LDAPAuthentication extends AuthenticationMethod {
 
     private static final Logger log
-            = org.apache.logging.log4j.LogManager.getLogger(LDAPAuthentication.class);
+            = org.apache.logging.log4j.LogManager.getLogger();
 
     protected AuthenticationService authenticationService
             = AuthenticateServiceFactory.getInstance().getAuthenticationService();
@@ -136,8 +136,8 @@ public class LDAPAuthentication implements AuthenticationMethod {
     }
 
     /**
-     * Add authenticated users to the group defined in dspace.cfg by
-     * the login.specialgroup key.
+     * Add authenticated users to the group defined in {@code dspace.cfg} by
+     * the {@code login.specialgroup} key.
      */
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) {
@@ -154,13 +154,13 @@ public class LDAPAuthentication implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
             if (!context.getCurrentUser().getNetid().equals("")) {
-                String groupName = configurationService.getProperty("authentication-ldap.login.specialgroup");
+                String groupName = configurationService.getProperty("authentication-" + getName() + ".login.specialgroup");
                 if ((groupName != null) && (!groupName.trim().equals(""))) {
                     Group ldapGroup = groupService.findByName(context, groupName);
                     if (ldapGroup == null) {
                         // Oops - the group isn't there.
                         log.warn(LogHelper.getHeader(context,
-                                                      "ldap_specialgroup",
+                                                      getName() + "_specialgroup",
                                                       "Group defined in login.specialgroup does not exist"));
                         return Collections.EMPTY_LIST;
                     } else {

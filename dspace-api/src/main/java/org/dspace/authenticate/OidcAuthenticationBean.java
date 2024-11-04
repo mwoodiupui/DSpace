@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  */
-public class OidcAuthenticationBean implements AuthenticationMethod {
+public class OidcAuthenticationBean extends AuthenticationMethod {
 
     public static final String OIDC_AUTH_ATTRIBUTE = "oidc";
 
@@ -81,11 +81,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public void initEPerson(Context context, HttpServletRequest request, EPerson eperson) throws SQLException {
-    }
-
-    @Override
-    public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return List.of();
     }
 
     @Override

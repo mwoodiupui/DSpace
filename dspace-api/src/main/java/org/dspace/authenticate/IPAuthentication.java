@@ -44,13 +44,12 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * For supported IP ranges see {@link org.dspace.authenticate.IPMatcher}.
  *
  * @author Robert Tansley
- * @version $Revision$
  */
-public class IPAuthentication implements AuthenticationMethod {
+public class IPAuthentication extends AuthenticationMethod {
     /**
      * Our logger
      */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(IPAuthentication.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
     /**
      * All the IP matchers
@@ -83,8 +82,8 @@ public class IPAuthentication implements AuthenticationMethod {
      * will never fail if the configuration is bad -- a warning will be logged.
      */
     public IPAuthentication() {
-        ipMatchers = new ArrayList<IPMatcher>();
-        ipNegativeMatchers = new ArrayList<IPMatcher>();
+        ipMatchers = new ArrayList<>();
+        ipNegativeMatchers = new ArrayList<>();
         ipMatcherGroupIDs = new HashMap<>();
         ipMatcherGroupNames = new HashMap<>();
         groupService = EPersonServiceFactory.getInstance().getGroupService();
@@ -164,7 +163,7 @@ public class IPAuthentication implements AuthenticationMethod {
         if (request == null) {
             return Collections.EMPTY_LIST;
         }
-        List<Group> groups = new ArrayList<Group>();
+        List<Group> groups = new ArrayList<>();
 
         // Get the user's IP address
         String addr = clientInfoService.getClientIp(request);

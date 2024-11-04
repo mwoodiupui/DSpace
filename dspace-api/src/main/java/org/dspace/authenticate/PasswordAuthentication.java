@@ -45,7 +45,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @author Larry Stone
  */
 public class PasswordAuthentication
-    implements AuthenticationMethod {
+    extends AuthenticationMethod {
 
     /**
      * log4j category
@@ -54,9 +54,8 @@ public class PasswordAuthentication
 
     private static final String PASSWORD_AUTHENTICATED = "password.authenticated";
 
-    private EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
-
-
+    private final EPersonService ePersonService
+            = EPersonServiceFactory.getInstance().getEPersonService();
 
     /**
      * Look to see if this email address is allowed to register.
@@ -134,8 +133,8 @@ public class PasswordAuthentication
     }
 
     /**
-     * Add authenticated users to the group defined in authentication-password.cfg by
-     * the login.specialgroup key.
+     * Add authenticated users to the group defined in
+     * {@code authentication-password.cfg} by the {@code login.specialgroup} key.
      */
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) {
@@ -146,15 +145,16 @@ public class PasswordAuthentication
                 && StringUtils.isNotBlank(
                 EPersonServiceFactory.getInstance().getEPersonService().getPasswordHash(context.getCurrentUser())
                                      .toString())) {
-                String groupName = DSpaceServicesFactory.getInstance().getConfigurationService()
-                                                        .getProperty("authentication-password.login.specialgroup");
+                String groupName = DSpaceServicesFactory.getInstance()
+                        .getConfigurationService()
+                        .getProperty("authentication-" + getName() + ".login.specialgroup");
                 if ((groupName != null) && !groupName.trim().isEmpty()) {
                     Group specialGroup = EPersonServiceFactory.getInstance().getGroupService()
                                                               .findByName(context, groupName);
                     if (specialGroup == null) {
                         // Oops - the group isn't there.
                         log.warn(LogHelper.getHeader(context,
-                                                      "password_specialgroup",
+                                                      getName() + "_specialgroup",
                                                       "Group defined in modules/authentication-password.cfg login" +
                                                           ".specialgroup does not exist"));
                         return Collections.EMPTY_LIST;
