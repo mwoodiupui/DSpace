@@ -1,8 +1,21 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+
 package org.dspace.handle;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.inject.Inject;
 import net.handle.hdllib.AuthenticationInfo;
 import net.handle.hdllib.CreateHandleRequest;
@@ -27,6 +40,9 @@ public class ExternalHandleServiceImpl
     private static final Logger LOG = LogManager.getLogger();
 
     private final HandleResolver handleResolver;
+
+    private static final String C_HANDLE_SERVER_USER = "handle.server.user";
+    private static final String C_HANDLE_SERVER_SECRET_KEY = "handle.server.key.secret";
 
     @Inject
     private DSpaceObjectService dspaceObjectService;
@@ -59,7 +75,9 @@ public class ExternalHandleServiceImpl
         values[0].setAnyoneCanWrite(false);
         // XXX setType?
 
-        AuthenticationInfo authentication = new SecretKeyAuthenticationInfo(new byte[0], 0, new byte[0]); // TODO
+        String handleUser = configurationService.getProperty(C_HANDLE_SERVER_USER);
+        AuthenticationInfo authentication = new SecretKeyAuthenticationInfo(
+                handleUser.getBytes(), 0, getSecretKey()); // FIXME index
 
         CreateHandleRequest req = new CreateHandleRequest(suppliedHandle.getBytes(), values, authentication);
         try {
@@ -142,5 +160,27 @@ public class ExternalHandleServiceImpl
         handleObject.setDSpaceObject(dso);
         handleObject.setResourceTypeId(dso.getType());
         return handleObject;
+    }
+
+    /**
+     * Read the Handle user's secret key from the configured path.
+     *
+     * @return the key as read.
+     * @throws SQLException if the key file is unavailable or unreadable.
+     */
+    private byte[] getSecretKey()
+            throws SQLException {
+        byte[] secretKey;
+        String keyPath = configurationService.getProperty(C_HANDLE_SERVER_SECRET_KEY);
+        try (InputStream keyStream = new FileInputStream(keyPath)) {
+            secretKey = keyStream.readAllBytes();
+        } catch (FileNotFoundException ex) {
+            LOG.error("Handle server secret key {} not read", keyPath, ex.getMessage());
+            throw new SQLException("Handle operation aborted");
+        } catch (IOException ex) {
+            LOG.error("Unable to read handle server secret key {}", keyPath, ex.getMessage());
+            throw new SQLException("Handle operation aborted");
+        }
+        return secretKey;
     }
 }
