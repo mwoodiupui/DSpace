@@ -154,7 +154,8 @@ public class LDAPAuthentication extends AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
             if (!context.getCurrentUser().getNetid().equals("")) {
-                String groupName = configurationService.getProperty("authentication-" + getName() + ".login.specialgroup");
+                String groupName = configurationService.getProperty(
+                        "authentication-" + getName() + ".login.specialgroup");
                 if ((groupName != null) && (!groupName.trim().equals(""))) {
                     Group ldapGroup = groupService.findByName(context, groupName);
                     if (ldapGroup == null) {

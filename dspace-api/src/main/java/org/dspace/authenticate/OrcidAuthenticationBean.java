@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.orcid.OrcidToken;
 import org.dspace.orcid.client.OrcidClient;

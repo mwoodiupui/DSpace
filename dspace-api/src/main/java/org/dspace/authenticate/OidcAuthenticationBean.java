@@ -17,7 +17,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,7 +29,6 @@ import org.dspace.authenticate.oidc.OidcClient;
 import org.dspace.authenticate.oidc.model.OidcTokenResponseDTO;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;

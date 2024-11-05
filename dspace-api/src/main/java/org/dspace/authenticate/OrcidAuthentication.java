@@ -9,14 +9,12 @@ package org.dspace.authenticate;
 
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.dspace.authenticate.factory.AuthenticateServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.dspace.eperson.Group;
 import org.dspace.kernel.ServiceManager;
 import org.dspace.utils.DSpace;
 
