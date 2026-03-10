@@ -1,17 +1,17 @@
 package org.dspace.browse.configuration;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
 /**
  * Holder for the configuration of the browse functions.
  *
  * @author mwood
  */
+@Named
 public class BrowseConfigurationServiceImpl {
-    private final BrowseIndexConfig[] browseIndexes;
-    private final BrowseLinkConfig[] browseLinks;
-
-    public BrowseConfigurationServiceImpl(BrowseIndexConfig[] indexes,
-            BrowseLinkConfig[] links) {
-        this.browseIndexes = indexes;
-        this.browseLinks = links;
-    }
+    @Inject
+    private BrowseIndexConfig[] browseIndexes;
+    @Inject
+    private BrowseLinkConfig[] browseLinks;
 }

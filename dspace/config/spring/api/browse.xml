@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package='org.dspace'/>
+
+  <!-- The browse configuration object -->
+  <!-- Spring will find this during component scanning.
+  <bean
+      class='org.dspace.browse.configuration.BrowseConfigurationserviceImpl'
+      >
+      <description>
+          Index and browse-link definitions will be injected automatically.
+      </description>
+  </bean>
+        -->
+
+  <!-- The browse indexes -->
+
+  <bean class='org.dspace.browse.configuration.ItemBrowseIndexConfig'>
+    <constructor-arg value='dateissued'/>
+    <constructor-arg ref='dateissued'/>
+  </bean>
+
+  <bean
+      class='org.dspace.browse.configuration.MetadataBrowseIndexConfig'>
+    <constructor-arg value='author'/>
+    <constructor-arg>
+      <array>
+	<ref bean='dc.contributor.star'/>
+	<ref bean='dc.creator'/>
+      </array>
+    </constructor-arg>
+    <constructor-arg value='text'/>
+  </bean>
+
+  <bean class='org.dspace.browse.configuration.ItemBrowseIndexConfig'>
+    <constructor-arg value='title'/>
+    <constructor-arg value='title'/>
+  </bean>
+
+  <bean
+      class='org.dspace.browse.configuration.MetadataBrowseIndexConfig'>
+    <constructor-arg value='subject'/>
+    <constructor-arg>
+      <array>
+	<ref bean='dc.subject.star'/>
+      </array>
+    </constructor-arg>
+    <constructor-arg value='text'/>
+  </bean>
+
+  <!--
+  <bean class='org.dspace.browse.configuration.ItemBrowseIndexConfig'>
+    <constructor-arg value='dateaccessioned'/>
+    <constructor-arg value='dateaccessioned'/>
+  </bean>
+  -->
+
+  <bean class='org.dspace.content.MetadataFieldName'
+	id='dc.contributor.star'>
+    <constructor-arg value='dc'/>
+    <constructor-arg value='contributor'/>
+    <constructor-arg value='*'/>
+  </bean>
+
+  <bean class='org.dspace.content.MetadataFieldName'
+	id='dc.creator'>
+    <constructor-arg value='dc'/>
+    <constructor-arg value='creator'/>
+  </bean>
+
+  <bean class='org.dspace.content.MetadataFieldName'
+	id='dc.subject.star'>
+    <constructor-arg value='dc'/>
+    <constructor-arg value='subject'/>
+    <constructor-arg value='*'/>
+  </bean>
+
+  <!-- Browse links -->
+
+  <bean class='org.dspace.browse.configuration.BrowseLinkConfig'>
+    <constructor-arg value='author'/>
+    <constructor-arg ref='dc.contributor.star'/>
+  </bean>
+  
+  <!-- Sorting -->
+
+  <bean class='org.dspace.browse.configuration.SortOption'
+	id='title'>
+    <constructor-arg value='title'/>
+    <constructor-arg>
+      <bean class='org.dspace.content.MetadataFieldName'>
+	<constructor-arg value='dc'/>
+	<constructor-arg value='title'/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value='title'/>
+  </bean>
+
+  <bean class='org.dspace.browse.configuration.SortOption'
+	id='dateissued'>
+    <constructor-arg value='dateissued'/>
+    <constructor-arg>
+      <bean class='org.dspace.content.MetadataFieldName'>
+	<constructor-arg value='dc'/>
+	<constructor-arg value='date'/>
+	<constructor-arg value='issued'/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value='date'/>
+  </bean>
+
+  <bean class='org.dspace.browse.configuration.SortOption'
+	id='dateaccessioned'>
+    <constructor-arg value='dateaccessioned'/>
+    <constructor-arg>
+      <bean class='org.dspace.content.MetadataFieldName'>
+	<constructor-arg value='dc'/>
+	<constructor-arg value='date'/>
+	<constructor-arg value='accessioned'/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value='date'/>
+  </bean>
+</beans>
