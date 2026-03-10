@@ -11,13 +11,13 @@ import org.dspace.content.MetadataFieldName;
  */
 public class MetadataBrowseIndexConfig
         extends BrowseIndexConfig {
-    private final MetadataFieldName field;
+    private final MetadataFieldName[] fields;
     private final String type;
 
-    public MetadataBrowseIndexConfig(String name, MetadataFieldName field,
+    public MetadataBrowseIndexConfig(String name, MetadataFieldName[] fields,
             String type, String order, SortOption sortOption) {
         super(name, order, sortOption);
-        this.field = field;
+        this.fields = fields;
         this.type = type; // TODO date title text {other}
     }
 }
